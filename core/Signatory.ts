@@ -1,6 +1,5 @@
 import { 
     callAPI, apiPortSignatory,
-    KeyAlgorithm, KeyFormat, DIDMethod,
     VCTemplate, IssueCredentialRequest,
 } from './utils';
 
@@ -10,6 +9,11 @@ export class Signatory {
                                CREDENTIALS
     //////////////////////////////////////////////////////////////*/
 
+    /**
+     * 
+     * @param request is the object containing the request data (refer to IssueCredentialRequest)
+     * @returns a W3C Verifiable Credential
+     */
     static async issueCredential(request: IssueCredentialRequest) {
         let result = await callAPI(
             "POST", 
@@ -51,4 +55,37 @@ export class Signatory {
         return result?.data;
     }
 
+    /*//////////////////////////////////////////////////////////////
+                               REVOCATIONS
+    //////////////////////////////////////////////////////////////*/
+
+    // TODO: check the response of the API call
+    /**
+     * 
+     * @param revocationToken is VC's token for the revoke
+     * @returns 
+     */
+    static async checkIfVCRevoked(revocationToken: string): Promise<any> {
+        let result = await callAPI(
+            "GET", 
+            apiPortSignatory,
+            `/v1/revocations/${revocationToken}`
+        );
+        return result?.data;
+    }
+
+    // TODO: check the response of the API call
+    /**
+     * 
+     * @param notDelegatedRevocationToken is VC's token for the revoke
+     * @returns 
+     */
+    static async revokeVC(notDelegatedRevocationToken: string): Promise<any> {
+        let result = await callAPI(
+            "POST", 
+            apiPortSignatory,
+            `/v1/revocations/${notDelegatedRevocationToken}`
+        );
+        return result?.data;
+    }
 }

@@ -9,6 +9,7 @@ export const apiPortCustodian: Port = 7002;
 export const apiPortAuditor: Port = 7003;
 export const apiPortESSIF: Port = 7004;
 
+// THESE TYPES ARE BASED ON WALT.ID SSI KIT
 export type KeyAlgorithm = "RSA" | "EdDSA_Ed25519" | "ECDSA_Secp256k1";
 export type KeyFormat = "JWK" | "PEM";
 export type DIDMethod = "key" | "did" | "ebsi";
@@ -66,7 +67,7 @@ export async function callAPI(
         }
         return result
     } catch(err: any) {
-        console.log(err.response.data)
+        // console.log(err.response.data)
         return ""
     }
 }

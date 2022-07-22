@@ -184,6 +184,29 @@ describe('Custodian Class', () => {
                 }
             })
         })
+        describe('importDID', () => {
+            it('should import a DID', async () => {
+                let key = await Custodian.generateKey("EdDSA_Ed25519");
+                let did = await Custodian.createDID("key", key.keyId.id);
+                await Custodian.importDID(did);
+            }),
+            it('should throw an error if the DID already exists', async () => {
+                let key = await Custodian.generateKey("EdDSA_Ed25519");
+                let did = await Custodian.createDID("key", key.keyId.id);
+                try {
+                    await Custodian.importDID(did);
+                } catch (error) {
+                    expect(error).toBeInstanceOf(Error);
+                }
+            })
+            it('should throw an error if the DID doesn\'t exist', async () => {
+                try {
+                    await Custodian.importDID("did:monokee:123456789");
+                } catch (error) {
+                    expect(error).toBeInstanceOf(Error);
+                }
+            })
+        })
 
     })
 })

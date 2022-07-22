@@ -257,6 +257,15 @@ export class Custodian {
         return result?.data;
     }
 
+    static async importDID(did: string) {
+        await callAPI(
+            "POST",
+            apiPortCustodian,
+            "/did/import",
+            JSON.parse(JSON.stringify(did))
+        )
+    }
+
     /*//////////////////////////////////////////////////////////////
                          CREDENTIALs MANAGEMENT
     //////////////////////////////////////////////////////////////*/

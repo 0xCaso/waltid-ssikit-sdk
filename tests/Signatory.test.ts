@@ -21,12 +21,10 @@ describe('Signatory Class', () => {
     });
 
     describe('Credentials', () => {
-
         beforeAll(async () => {
             await Custodian.deleteAllKeys();
             await Custodian.deleteAllDIDs();
         });
-
         it('should issue a credential', async () => {
             let issuerKey = await Custodian.generateKey("EdDSA_Ed25519");
             let issuerDID = await Custodian.createDID("key", issuerKey.keyId.id);
@@ -39,12 +37,16 @@ describe('Signatory Class', () => {
                 new ProofConfig(issuerDID, subjectDID, proofType)
             )
             let result = await Signatory.issueCredential(request);
+            console.log(result)
             if (proofType) {
                 expect(typeof result).toBe("string");
             } else {
                 expect(typeof result).toBe("object");
             }
         });
+    });
+
+    describe('Revocations', () => {
     });
 
 });
