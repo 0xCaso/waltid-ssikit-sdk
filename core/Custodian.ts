@@ -1,7 +1,12 @@
 import { 
-    callAPI, apiPorts, KeyAlgorithm, KeyFormat,
+    callAPI, apiPorts, 
+    KeyAlgorithm, KeyFormat, DIDMethod
 } from './utils';
 
+/**
+ * @class Custodian
+ * @description This class is used to manage keys and their associated
+ */
 export class Custodian {
 
     /*//////////////////////////////////////////////////////////////
@@ -23,32 +28,52 @@ export class Custodian {
     }
     
     static async deleteAllKeys() {
-        console.log("──────────────────────────────────────────")
-        console.log("Deleting all keys...\n");
-        let keys: Array<any> = await this.getKeys();
+        // console.log("──────────────────────────────────────────")
+        // console.log("Deleting all keys...\n");
+        let keys = await this.getKeys();
         for (let key of keys) {
             await this.deleteKey(key.keyId.id);
         }
-        console.log("\nDone.");
-        console.log("──────────────────────────────────────────")
+        // console.log("\nDone.");
+        // console.log("──────────────────────────────────────────")
+    }
+
+    static async deleteAllDIDs() {
+        let dids = await this.getDIDs();
+        for (let did of dids) {
+            await this.deleteDID(did);
+        }
+    }
+
+    private static checkIfStringOrObject(param: any, type: string): string {
+        let id: string = "";
+        if (typeof param === "string") {
+            id = param;
+        } else {
+            if (type === "key") {
+                id = param?.keyId?.id;
+            } else if (type === "did") {
+                id = param?.id;
+            }
+        }
+        return id;
     }
 
     /*//////////////////////////////////////////////////////////////
-                             KEYS MANAGEMENT
+                             KEYs MANAGEMENT
     //////////////////////////////////////////////////////////////*/
 
     /**
      * 
      * @returns Array of Key objects
      */
-    static async getKeys(): Promise<Array<any>> {
+    static async getKeys(): Promise<any> {
         let result = await callAPI(
             "GET",
             apiPorts.Custodian,
             "/keys"
         );
-        result = result.data.list;
-        return result;
+        return result?.data?.list;
     }
 
     /**
@@ -62,13 +87,7 @@ export class Custodian {
             apiPorts.Custodian,
             `/keys/${keyId}`
         );
-        if (result?.data) {
-            result = result?.data;
-        } else {
-            result = null;
-            console.log(`Key ${keyId} not found.`);
-        }
-        return result;
+        return result?.data;
     }
     
     /**
@@ -77,44 +96,27 @@ export class Custodian {
      * @returns Generated key object
      */
     static async generateKey(keyAlgorithm: KeyAlgorithm): Promise<any> {
-        console.log("Creating key...");
         var result = await callAPI(
             "POST",
             apiPorts.Custodian, 
             "/keys/generate", 
             { "keyAlgorithm": keyAlgorithm }
         );
-        let key = result.data;
-        console.log(`Key created: ${key.keyId.id}`);
-        return key;
+        return result?.data;
     }
     
     /**
      * 
      * @param key Key object or KeyID string
      */
-    static async deleteKey(key: string | any) {
-        let keys = await this.getKeys();
-        let keyId = "";
-        if (typeof key === "string") {
-            keyId = key;
-        } else {
-            keyId = key?.keyId?.id;
-        }
-        if (!keyId) {
-            console.log("ERROR: The parameter must be a Key object or a KeyID string.");
-        } else {
-            if (keys.find(k => k.keyId.id === keyId) === undefined) {
-                console.log(`Key ${keyId} not found.`);
-            } else {
-                console.log(`Deleting key: ${keyId}`);
-                await callAPI(
-                    "DELETE",
-                    apiPorts.Custodian,
-                    `/keys/${keyId}`,
-                );
-                console.log(`Key deleted: ${keyId}`);
-            }
+    static async deleteKey(key: any) {
+        let keyId = this.checkIfStringOrObject(key, "key");
+        if (keyId) {
+            await callAPI(
+                "DELETE",
+                apiPorts.Custodian,
+                `/keys/${keyId}`,
+            );
         }
     }
 
@@ -125,29 +127,28 @@ export class Custodian {
      * @param exportPrivate 
      * @returns 
      */
-    static async exportKey(key: string | any, format: KeyFormat, exportPrivate: boolean): Promise<any> {
-        let keyId = "";
-        if (typeof key === "string") {
-            keyId = key;
-        } else {
-            keyId = key?.keyId?.id;
-        }
-        if (!keyId) {
-            console.log("ERROR: The parameter must be a Key object or a KeyID string.");
-        } else {
+    static async exportKey(
+        key: any, 
+        format: KeyFormat, 
+        exportPrivate: boolean
+    ): 
+        Promise<any> 
+    {
+        let keyId = this.checkIfStringOrObject(key, "key");
+        if (keyId) {
             let key = await this.getKey(keyId);
-            if (key === null) {
-                console.log(`Key ${keyId} not found.`);
-            } else {
-                console.log(`Exporting key: ${keyId}`);
+            if (key) {
                 let result = await callAPI(
                     "POST",
                     apiPorts.Custodian,
                     `/keys/export`,
-                    { "keyAlias": keyId, "format": format, "exportPrivate": exportPrivate }
+                    { 
+                        "keyAlias": keyId, 
+                        "format": format, 
+                        "exportPrivate": exportPrivate 
+                    }
                 );
-                console.log(`Key exported: ${keyId}`);
-                return result.data;
+                return result?.data;
             }
         }
     }
@@ -158,15 +159,118 @@ export class Custodian {
      * @returns the keyId of the imported key
      */
     static async importKey(formattedKey: object): Promise<any> {
-        console.log("Importing key...");
         let result = await callAPI(
             "POST",
             apiPorts.Custodian,
             "/keys/import",
             formattedKey
         );
-        if (result.data.id)
-        console.log(`Key imported: ${result.data.id}`);
-        return result.data.id;
+        return result?.data?.id;
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                            DIDs MANAGEMENT
+    //////////////////////////////////////////////////////////////*/
+
+    /**
+     * 
+     * @returns Array of DID strings
+     */
+    static async getDIDs(): Promise<any> {
+        let result = await callAPI(
+            "GET",
+            apiPorts.Custodian,
+            "/did"
+        );
+        return result?.data;
+    }
+
+    /**
+     * 
+     * @param did DID id string
+     * @returns DID object with related metadata
+     */
+    static async getDID(did: string): Promise<any> {
+        let result = await callAPI(
+            "GET",
+            apiPorts.Custodian,
+            `/did/${did}`
+        );
+        return result?.data;
+    }
+
+    /**
+     * 
+     * @param method DID method. Admitted values: key, web, ebsi
+     * @param keyId KeyID string
+     * @param didWebDomain DID web domain string
+     * @param didWebPath DID web path string
+     * @returns DID id string
+     */
+    static async createDID(
+        method: DIDMethod, 
+        keyId: string, 
+        didWebDomain?: string, 
+        didWebPath?: string
+    ): 
+        Promise<string> 
+    {
+        let result = await callAPI(
+            "POST",
+            apiPorts.Custodian,
+            "/did/create",
+            {
+                "method": method,
+                "keyAlias": keyId,
+                "didWebDomain": didWebDomain,
+                "didWebPath": didWebPath
+            }
+        );
+        return result?.data;
+    }
+
+    /**
+     * 
+     * @param did DID id string or object
+     */ 
+    static async deleteDID(did: any) {
+        let didId = this.checkIfStringOrObject(did, "did");
+        await callAPI(
+            "DELETE",
+            apiPorts.Custodian,
+            `/did/${didId}`
+        );
+    }
+
+    /**
+     * 
+     * @param did DID id string
+     * @returns DID object with related metadata
+     */
+    static async resolveDID(did: string): Promise<any> {
+        let result = await callAPI(
+            "POST",
+            apiPorts.Custodian,
+            "/did/resolve",
+            { "did": did }
+        );
+        return result?.data;
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                         CREDENTIALs MANAGEMENT
+    //////////////////////////////////////////////////////////////*/
+
+    /**
+     * 
+     * @returns Array of Credential objects
+     */
+    static async getCredentials(): Promise<any> {
+        let result = await callAPI(
+            "GET",
+            apiPorts.Custodian,
+            "/credentials"
+        );
+        return result?.data?.list;
     }
 }

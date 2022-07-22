@@ -36,7 +36,7 @@ export async function callAPI(
         }
         return result
     } catch(err: any) {
-        console.log(err.response.data)
+        // console.log(err.response.data)
         return ""
     }
 }
@@ -44,37 +44,17 @@ export async function callAPI(
 export enum KeyAlgorithm { 
     RSA = "RSA", 
     EdDSA_Ed25519 = "EdDSA_Ed25519", 
-    ECDSA_Secp256k1= "ECDSA_Secp256k1" 
+    ECDSA_Secp256k1= "ECDSA_Secp256k1",
 }
+
 export enum KeyFormat { 
     PEM = "PEM", 
-    JWK = "JWK" 
+    JWK = "JWK",
 }
-// export class KeyId {
-//     public id: string;
 
-//     constructor(_id: string) {
-//         this.id = _id;
-//     }
-// }
-
-// export class Key {
-//     public id: KeyId;
-//     public algorithm: KeyAlgorithm;
-//     public cryptoProvider: CryptoProvider;
-//     public keysetHandle: KeysetHandle;
-
-//     constructor(
-//         _id: string,
-//         _algorithm: KeyAlgorithm,
-//         _cryptoProvider: CryptoProvider,
-//         _keysetHandle: KeysetHandle
-//     ) {
-//         this.id = new KeyId(_id);
-//         this.algorithm = _algorithm;
-//         this.cryptoProvider = _cryptoProvider;
-//         this.keysetHandle = _keysetHandle;
-//     }
-// }
-
+export enum DIDMethod {
+    key = "key",
+    web = "web",
+    ebsi = "ebsi",
+}
 
