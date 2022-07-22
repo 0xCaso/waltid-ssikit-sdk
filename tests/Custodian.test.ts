@@ -1,5 +1,4 @@
 import { Custodian } from '../core/Custodian';
-import { KeyAlgorithm, KeyFormat, DIDMethod } from '../core/utils';
 
 describe('Custodian Class', () => {
 
@@ -11,7 +10,7 @@ describe('Custodian Class', () => {
         
         describe('generateKey', () => {
             it('should generate a key', async () => {
-                let key = await Custodian.generateKey(KeyAlgorithm.RSA);
+                let key = await Custodian.generateKey("RSA");
                 expect(key).toBeInstanceOf(Object);
                 expect(typeof key.keyId.id).toBe('string');
             })
@@ -19,7 +18,7 @@ describe('Custodian Class', () => {
         describe('getKeys', () => {
             it('should return an array of keys', async () => {
                 for (let i = 0; i < 5; i++) {
-                    await Custodian.generateKey(KeyAlgorithm.RSA);
+                    await Custodian.generateKey("RSA");
                 }
                 let keys = await Custodian.getKeys();
                 expect(keys).toBeInstanceOf(Array);
@@ -29,7 +28,7 @@ describe('Custodian Class', () => {
         }),
         describe('getKey', () => {
             it('should return a key', async () => {
-                let key = await Custodian.generateKey(KeyAlgorithm.RSA);
+                let key = await Custodian.generateKey("RSA");
                 key = await Custodian.getKey(key.keyId.id);
                 expect(key).toBeInstanceOf(Object);
                 expect(typeof key.keyId.id).toBe('string');
@@ -44,7 +43,7 @@ describe('Custodian Class', () => {
         }),
         describe('deleteKey', () => {
             it('should delete a key', async () => {
-                let key = await Custodian.generateKey(KeyAlgorithm.RSA);
+                let key = await Custodian.generateKey("RSA");
                 await Custodian.deleteKey(key.keyId.id);
                 let keys = await Custodian.getKeys();
                 expect(keys.length).toBe(0);
@@ -59,14 +58,14 @@ describe('Custodian Class', () => {
         }),
         describe('exportKey', () => {
             it('should export a key', async () => {
-                let key = await Custodian.generateKey(KeyAlgorithm.RSA);
-                let exported = await Custodian.exportKey(key, KeyFormat.JWK, true);
+                let key = await Custodian.generateKey("RSA");
+                let exported = await Custodian.exportKey(key, "JWK", true);
                 expect(exported).toBeInstanceOf(Object);
                 expect(typeof exported.kid).toBe('string');
             }),
             it('should throw an error if the key does not exist', async () => {
                 try {
-                    await Custodian.exportKey('123', KeyFormat.JWK, true);
+                    await Custodian.exportKey('123', "JWK", true);
                 } catch (error) {
                     expect(error).toBeInstanceOf(Error);
                 }
@@ -74,8 +73,8 @@ describe('Custodian Class', () => {
         }),
         describe('importKey', () => {
             it('should import a key', async () => {
-                let key = await Custodian.generateKey(KeyAlgorithm.RSA);
-                let exported = await Custodian.exportKey(key, KeyFormat.JWK, true);
+                let key = await Custodian.generateKey("RSA");
+                let exported = await Custodian.exportKey(key, "JWK", true);
                 await Custodian.deleteKey(key.keyId.id);
                 let imported = await Custodian.importKey(exported);
                 expect(typeof imported).toBe('string');
@@ -88,8 +87,8 @@ describe('Custodian Class', () => {
                 }
             })
             it('should throw an error if the key already exists', async () => {
-                let key = await Custodian.generateKey(KeyAlgorithm.RSA);
-                let exported = await Custodian.exportKey(key, KeyFormat.JWK, true);
+                let key = await Custodian.generateKey("RSA");
+                let exported = await Custodian.exportKey(key, "JWK", true);
                 try {
                     await Custodian.importKey(exported);
                 } catch (error) {
@@ -108,8 +107,8 @@ describe('Custodian Class', () => {
 
         describe('getDIDs', () => {
             it('should return an array of DIDs', async () => {
-                let key = await Custodian.generateKey(KeyAlgorithm.EdDSA_Ed25519);
-                await Custodian.createDID(DIDMethod.key, key.keyId.id);
+                let key = await Custodian.generateKey("EdDSA_Ed25519");
+                await Custodian.createDID("key", key.keyId.id);
                 let dids = await Custodian.getDIDs();
                 expect(dids).toBeInstanceOf(Array);
                 expect(typeof dids[0]).toBe('string')
@@ -117,8 +116,8 @@ describe('Custodian Class', () => {
         })
         describe('getDID', () => {
             it('should return a DID', async () => {
-                let key = await Custodian.generateKey(KeyAlgorithm.EdDSA_Ed25519);
-                await Custodian.createDID(DIDMethod.key, key.keyId.id);
+                let key = await Custodian.generateKey("EdDSA_Ed25519");
+                await Custodian.createDID("key", key.keyId.id);
                 let dids = await Custodian.getDIDs();
                 let did = await Custodian.getDID(dids[0]);
                 expect(did).toBeInstanceOf(Object);
@@ -135,8 +134,8 @@ describe('Custodian Class', () => {
         })
         describe('createDID', () => {
             it('should create a DID', async () => {
-                let key = await Custodian.generateKey(KeyAlgorithm.EdDSA_Ed25519);
-                let did = await Custodian.createDID(DIDMethod.key, key.keyId.id);
+                let key = await Custodian.generateKey("EdDSA_Ed25519");
+                let did = await Custodian.createDID("key", key.keyId.id);
                 expect(typeof did).toBe('string');
                 let didParts = did.split(':');
                 expect(didParts[0]).toBe("did");
@@ -144,9 +143,9 @@ describe('Custodian Class', () => {
             }),
             it('should throw an error if the DID already exists', async () => {
                 try {
-                    let key = await Custodian.generateKey(KeyAlgorithm.EdDSA_Ed25519);
-                    await Custodian.createDID(DIDMethod.key, key.keyId.id);
-                    await Custodian.createDID(DIDMethod.key, key.keyId.id);
+                    let key = await Custodian.generateKey("EdDSA_Ed25519");
+                    await Custodian.createDID("key", key.keyId.id);
+                    await Custodian.createDID("key", key.keyId.id);
                 } catch (error) {
                     expect(error).toBeInstanceOf(Error);
                 }
@@ -154,8 +153,8 @@ describe('Custodian Class', () => {
         })
         describe('deleteDID', () => {
             it('should delete a DID', async () => {
-                let key = await Custodian.generateKey(KeyAlgorithm.EdDSA_Ed25519);
-                let did = await Custodian.createDID(DIDMethod.key, key.keyId.id);
+                let key = await Custodian.generateKey("EdDSA_Ed25519");
+                let did = await Custodian.createDID("key", key.keyId.id);
                 await Custodian.deleteDID(did);
                 let dids = await Custodian.getDIDs();
                 expect(dids.length).toBe(0);
@@ -170,8 +169,8 @@ describe('Custodian Class', () => {
         })
         describe('resolveDID', () => {
             it('should resolve a DID', async () => {
-                let key = await Custodian.generateKey(KeyAlgorithm.EdDSA_Ed25519);
-                let did = await Custodian.createDID(DIDMethod.key, key.keyId.id);
+                let key = await Custodian.generateKey("EdDSA_Ed25519");
+                let did = await Custodian.createDID("key", key.keyId.id);
                 let resolved = await Custodian.resolveDID(did);
                 expect(resolved).toBeInstanceOf(Object);
                 expect(resolved.id).toBe(did);

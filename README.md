@@ -1,4 +1,6 @@
-# walt.id typescript SDK
+# walt.id Typescript SDK
+
+To run the tests, run `npm test`.
 
 To execute, run the following commands:
 ```

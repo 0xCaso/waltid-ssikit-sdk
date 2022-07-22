@@ -1,5 +1,5 @@
 import { 
-    callAPI, apiPorts, 
+    callAPI, apiPortCustodian, 
     KeyAlgorithm, KeyFormat, DIDMethod
 } from './utils';
 
@@ -70,7 +70,7 @@ export class Custodian {
     static async getKeys(): Promise<any> {
         let result = await callAPI(
             "GET",
-            apiPorts.Custodian,
+            apiPortCustodian,
             "/keys"
         );
         return result?.data?.list;
@@ -84,7 +84,7 @@ export class Custodian {
     static async getKey(keyId: string): Promise<any> {
         let result = await callAPI(
             "GET",
-            apiPorts.Custodian,
+            apiPortCustodian,
             `/keys/${keyId}`
         );
         return result?.data;
@@ -98,7 +98,7 @@ export class Custodian {
     static async generateKey(keyAlgorithm: KeyAlgorithm): Promise<any> {
         var result = await callAPI(
             "POST",
-            apiPorts.Custodian, 
+            apiPortCustodian, 
             "/keys/generate", 
             { "keyAlgorithm": keyAlgorithm }
         );
@@ -114,7 +114,7 @@ export class Custodian {
         if (keyId) {
             await callAPI(
                 "DELETE",
-                apiPorts.Custodian,
+                apiPortCustodian,
                 `/keys/${keyId}`,
             );
         }
@@ -140,7 +140,7 @@ export class Custodian {
             if (key) {
                 let result = await callAPI(
                     "POST",
-                    apiPorts.Custodian,
+                    apiPortCustodian,
                     `/keys/export`,
                     { 
                         "keyAlias": keyId, 
@@ -161,7 +161,7 @@ export class Custodian {
     static async importKey(formattedKey: object): Promise<any> {
         let result = await callAPI(
             "POST",
-            apiPorts.Custodian,
+            apiPortCustodian,
             "/keys/import",
             formattedKey
         );
@@ -179,7 +179,7 @@ export class Custodian {
     static async getDIDs(): Promise<any> {
         let result = await callAPI(
             "GET",
-            apiPorts.Custodian,
+            apiPortCustodian,
             "/did"
         );
         return result?.data;
@@ -193,7 +193,7 @@ export class Custodian {
     static async getDID(did: string): Promise<any> {
         let result = await callAPI(
             "GET",
-            apiPorts.Custodian,
+            apiPortCustodian,
             `/did/${did}`
         );
         return result?.data;
@@ -217,7 +217,7 @@ export class Custodian {
     {
         let result = await callAPI(
             "POST",
-            apiPorts.Custodian,
+            apiPortCustodian,
             "/did/create",
             {
                 "method": method,
@@ -237,7 +237,7 @@ export class Custodian {
         let didId = this.checkIfStringOrObject(did, "did");
         await callAPI(
             "DELETE",
-            apiPorts.Custodian,
+            apiPortCustodian,
             `/did/${didId}`
         );
     }
@@ -250,7 +250,7 @@ export class Custodian {
     static async resolveDID(did: string): Promise<any> {
         let result = await callAPI(
             "POST",
-            apiPorts.Custodian,
+            apiPortCustodian,
             "/did/resolve",
             { "did": did }
         );
@@ -268,7 +268,7 @@ export class Custodian {
     static async getCredentials(): Promise<any> {
         let result = await callAPI(
             "GET",
-            apiPorts.Custodian,
+            apiPortCustodian,
             "/credentials"
         );
         return result?.data?.list;

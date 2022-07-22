@@ -11,7 +11,7 @@ async function custodianKeys() {
     console.log("Creating 5 keys...\n");
     let keys: Array<any> = [];
     for (let i = 0; i < 5; i++) {
-        let key = await Custodian.generateKey(KeyAlgorithm.RSA);
+        let key = await Custodian.generateKey("RSA");
         keys.push(key);
     }
     await Custodian.printKeys();
@@ -25,9 +25,9 @@ async function main() {
     // await custodianKeys();
 
     await Custodian.deleteAllKeys();
-    let key = await Custodian.generateKey(KeyAlgorithm.RSA);
+    let key = await Custodian.generateKey("RSA");
     key = await Custodian.getKey(key.keyId.id);
-    let exported = await Custodian.exportKey(key, KeyFormat.JWK, true);
+    let exported = await Custodian.exportKey(key, "JWK", true);
     await Custodian.deleteKey(key.keyId.id);
     let imported = await Custodian.importKey(exported);
     Custodian.printKeys();
