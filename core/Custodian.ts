@@ -1,4 +1,6 @@
-import { Key, callAPI, apiPorts } from './utils';
+import { 
+    callAPI, apiPorts, KeyAlgorithm, KeyFormat,
+} from './utils';
 
 export class Custodian {
 
@@ -8,11 +10,11 @@ export class Custodian {
 
     static async printKeys(): Promise<void> {
         console.log("──────────────────────────────────────────")
-        let keys: Array<Key> = await this.getKeys();
+        let keys: Array<any> = await this.getKeys();
         if (keys.length != 0) {
             console.log("Keys found:\n");
             for (let key of keys) {
-                console.log(key.id);
+                console.log(key.keyId.id);
             }
         } else {
             console.log("There are no saved keys yet.");
@@ -22,12 +24,12 @@ export class Custodian {
     
     static async deleteAllKeys() {
         console.log("──────────────────────────────────────────")
-        console.log("Deleting all keys...");
-        let keys = await this.getKeys();
+        console.log("Deleting all keys...\n");
+        let keys: Array<any> = await this.getKeys();
         for (let key of keys) {
-            await this.deleteKey(key);
+            await this.deleteKey(key.keyId.id);
         }
-        console.log("Done.");
+        console.log("\nDone.");
         console.log("──────────────────────────────────────────")
     }
 
@@ -35,46 +37,136 @@ export class Custodian {
                              KEYS MANAGEMENT
     //////////////////////////////////////////////////////////////*/
 
-    static async getKeys(): Promise<Array<Key>> {
-        var response = await callAPI(
-            "GET", 
-            apiPorts.Core, 
-            "/v1/key"
+    /**
+     * 
+     * @returns Array of Key objects
+     */
+    static async getKeys(): Promise<Array<any>> {
+        let result = await callAPI(
+            "GET",
+            apiPorts.Custodian,
+            "/keys"
         );
-        let keysList = response.data;
-        let keys: Array<Key> = [];
-        for (let key of keysList) {
-            keys.push(new Key(key));
+        result = result.data.list;
+        return result;
+    }
+
+    /**
+     * 
+     * @param keyId string
+     * @returns Key object
+     */
+    static async getKey(keyId: string): Promise<any> {
+        let result = await callAPI(
+            "GET",
+            apiPorts.Custodian,
+            `/keys/${keyId}`
+        );
+        if (result?.data) {
+            result = result?.data;
+        } else {
+            result = null;
+            console.log(`Key ${keyId} not found.`);
         }
-        return keys;
+        return result;
     }
     
-    static async generateKey(): Promise<Key> {
+    /**
+     * 
+     * @param keyAlgorithm Algorithm used for the key generation. Admitted values: RSA, EdDSA_Ed25519, ECDSA_Secp256k1
+     * @returns Generated key object
+     */
+    static async generateKey(keyAlgorithm: KeyAlgorithm): Promise<any> {
         console.log("Creating key...");
-        var response = await callAPI(
+        var result = await callAPI(
             "POST",
-            apiPorts.Core, 
-            "/v1/key/gen", 
-            { "keyAlgorithm": "EdDSA_Ed25519" }
+            apiPorts.Custodian, 
+            "/keys/generate", 
+            { "keyAlgorithm": keyAlgorithm }
         );
-        let key = new Key(response.data.id);
-        console.log(`Key created: ${key.id}`);
+        let key = result.data;
+        console.log(`Key created: ${key.keyId.id}`);
         return key;
     }
     
-    static async deleteKey(key: Key): Promise<any> {
+    /**
+     * 
+     * @param key Key object or KeyID string
+     */
+    static async deleteKey(key: string | any) {
         let keys = await this.getKeys();
-        if (keys.find(k => k.id === key.id) === undefined) {
-            console.log(`Key ${key.id} not found.`);
+        let keyId = "";
+        if (typeof key === "string") {
+            keyId = key;
         } else {
-            console.log(`Deleting key: ${key.id}`);
-            await callAPI(
-                "DELETE",
-                apiPorts.Core,
-                `/v1/key/${key.id}`,
-                { data: key.id }
-            );
-            console.log(`Key deleted: ${key.id}`);
+            keyId = key?.keyId?.id;
         }
+        if (!keyId) {
+            console.log("ERROR: The parameter must be a Key object or a KeyID string.");
+        } else {
+            if (keys.find(k => k.keyId.id === keyId) === undefined) {
+                console.log(`Key ${keyId} not found.`);
+            } else {
+                console.log(`Deleting key: ${keyId}`);
+                await callAPI(
+                    "DELETE",
+                    apiPorts.Custodian,
+                    `/keys/${keyId}`,
+                );
+                console.log(`Key deleted: ${keyId}`);
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param key Key object or KeyID string
+     * @param format The format you want to export the key to. Admitted values: JWK, PEM
+     * @param exportPrivate 
+     * @returns 
+     */
+    static async exportKey(key: string | any, format: KeyFormat, exportPrivate: boolean): Promise<any> {
+        let keyId = "";
+        if (typeof key === "string") {
+            keyId = key;
+        } else {
+            keyId = key?.keyId?.id;
+        }
+        if (!keyId) {
+            console.log("ERROR: The parameter must be a Key object or a KeyID string.");
+        } else {
+            let key = await this.getKey(keyId);
+            if (key === null) {
+                console.log(`Key ${keyId} not found.`);
+            } else {
+                console.log(`Exporting key: ${keyId}`);
+                let result = await callAPI(
+                    "POST",
+                    apiPorts.Custodian,
+                    `/keys/export`,
+                    { "keyAlias": keyId, "format": format, "exportPrivate": exportPrivate }
+                );
+                console.log(`Key exported: ${keyId}`);
+                return result.data;
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param formattedKey is a JWK or PEM object
+     * @returns the keyId of the imported key
+     */
+    static async importKey(formattedKey: object): Promise<any> {
+        console.log("Importing key...");
+        let result = await callAPI(
+            "POST",
+            apiPorts.Custodian,
+            "/keys/import",
+            formattedKey
+        );
+        if (result.data.id)
+        console.log(`Key imported: ${result.data.id}`);
+        return result.data.id;
     }
 }
