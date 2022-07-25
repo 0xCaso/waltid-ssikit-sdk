@@ -16,7 +16,10 @@ export const apiPortCustodian: Port = 7002;
 export const apiPortAuditor: Port = 7003;
 export const apiPortESSIF: Port = 7004;
 
-// THESE TYPES ARE BASED ON WALT.ID SSI KIT
+    /*//////////////////////////////////////////////////////////////
+                                  TYPES
+    //////////////////////////////////////////////////////////////*/
+
 export type KeyAlgorithm = "RSA" | "EdDSA_Ed25519" | "ECDSA_Secp256k1";
 export type KeyFormat = "JWK" | "PEM";
 export type DIDMethod = "key" | "did" | "ebsi";
@@ -51,35 +54,9 @@ export type VCTemplate =
     "Iso27001Certificate"
 ;
 
-export async function callAPI(
-    type: Call,
-    port: Port,
-    url: string,
-    params?: object
-): 
-    Promise<any> 
-{
-    let result
-    let config = params;
-    try {
-        if (type === "GET") {
-            result = await axios.get(`http://0.0.0.0:${port}${url}`, config);
-        } else 
-        if (type === "POST") {
-            result = await axios.post(`http://0.0.0.0:${port}${url}`, config);
-        } else 
-        if (type === "DELETE") {
-            result = await axios.delete(`http://0.0.0.0:${port}${url}`, config);
-        } else
-        if (type === "PUT") {
-            result = await axios.put(`http://0.0.0.0:${port}${url}`, config);
-        }
-        return result
-    } catch(err: any) {
-        debug ? console.log(err.response.data) : null;
-        return ""
-    }
-}
+    /*//////////////////////////////////////////////////////////////
+                                 CLASSES
+    //////////////////////////////////////////////////////////////*/
 
 export class ProofConfig {
     public issuerDid: string;
@@ -196,6 +173,84 @@ export class DynamicPolicyArg {
         this.policyEngine = policyEngine;
         this.applyToVC = applyToVC;
         this.applyToVP = applyToVP;
+    }
+}
+
+export class PresentCredentialsRequest {
+    public credentials: any[];
+    public holderDid: string;
+    public verifierDid?: string;
+    public domain?: string;
+    public challenge?: string;
+
+    constructor(
+        credentials: any[],
+        holderDid: string,
+        verifierDid?: string,
+        domain?: string,
+        challenge?: string,
+    ) {
+        this.credentials = credentials;
+        this.holderDid = holderDid;
+        this.verifierDid = verifierDid;
+        this.domain = domain;
+        this.challenge = challenge;
+    }
+}
+
+export class PresentCredentialIDsRequest {
+    public credentialsIDs: string[];
+    public holderDid: string;
+    public verifierDid?: string;
+    public domain?: string;
+    public challenge?: string;
+
+    constructor(
+        credentialsIDs: string[],
+        holderDid: string,
+        verifierDid?: string,
+        domain?: string,
+        challenge?: string,
+    ) {
+        this.credentialsIDs = credentialsIDs;
+        this.holderDid = holderDid;
+        this.verifierDid = verifierDid;
+        this.domain = domain;
+        this.challenge = challenge;
+    }
+}
+
+    /*//////////////////////////////////////////////////////////////
+                                FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
+
+export async function callAPI(
+    type: Call,
+    port: Port,
+    url: string,
+    params?: object
+): 
+    Promise<any> 
+{
+    let result
+    let config = params;
+    try {
+        if (type === "GET") {
+            result = await axios.get(`http://0.0.0.0:${port}${url}`, config);
+        } else 
+        if (type === "POST") {
+            result = await axios.post(`http://0.0.0.0:${port}${url}`, config);
+        } else 
+        if (type === "DELETE") {
+            result = await axios.delete(`http://0.0.0.0:${port}${url}`, config);
+        } else
+        if (type === "PUT") {
+            result = await axios.put(`http://0.0.0.0:${port}${url}`, config);
+        }
+        return result
+    } catch(err: any) {
+        debug ? console.log(err.response.data) : null;
+        return ""
     }
 }
 

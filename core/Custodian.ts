@@ -1,6 +1,7 @@
 import { 
     callAPI, apiPortCustodian, 
-    KeyAlgorithm, KeyFormat, DIDMethod
+    KeyAlgorithm, KeyFormat, DIDMethod,
+    PresentCredentialsRequest, PresentCredentialIDsRequest
 } from './utils';
 
 /**
@@ -60,7 +61,7 @@ export class Custodian {
     }
 
     /*//////////////////////////////////////////////////////////////
-                             KEYs MANAGEMENT
+                             KEYS MANAGEMENT
     //////////////////////////////////////////////////////////////*/
 
     /**
@@ -169,7 +170,7 @@ export class Custodian {
     }
 
     /*//////////////////////////////////////////////////////////////
-                            DIDs MANAGEMENT
+                            DID MANAGEMENT
     //////////////////////////////////////////////////////////////*/
 
     /**
@@ -267,12 +268,12 @@ export class Custodian {
     }
 
     /*//////////////////////////////////////////////////////////////
-                         CREDENTIALs MANAGEMENT
+                         CREDENTIALS MANAGEMENT
     //////////////////////////////////////////////////////////////*/
 
     /**
      * 
-     * @returns Array of Credential objects
+     * @returns Array of Credential objects the custodian knows of
      */
     static async getCredentials(): Promise<any> {
         let result = await callAPI(
@@ -281,5 +282,77 @@ export class Custodian {
             "/credentials"
         );
         return result?.data?.list;
+    }
+
+    /**
+     * 
+     * @param id Credential id string
+     * @returns Credential object
+     */
+    static async getCredential(id: string): Promise<any> {
+        let result = await callAPI(
+            "GET",
+            apiPortCustodian,
+            `/credentials/${id}`
+        );
+        return result?.data;
+    }
+
+    /**
+     * 
+     * @returns Array of Credential IDs the custodian knows of
+     */
+    static async listCredentialIDs(): Promise<any> {
+        let result = await callAPI(
+            "GET",
+            apiPortCustodian,
+            "/credentials/listCredentialIds"
+        );
+        return result?.data;
+    }
+
+    /**
+     * 
+     * @param alias Credential alias string (example: "MyPassport")
+     * @param credential Credential object to store
+     */
+    static async storeCredential(alias: string, credential: object) {
+        await callAPI(
+            "PUT",
+            apiPortCustodian,
+            `/credentials/${alias}`,
+            credential
+        );
+    }
+
+    /**
+     * 
+     * @param alias Credential's alias to delete
+     */
+    static async deleteCredential(alias: string) {
+        await callAPI(
+            "DELETE",
+            apiPortCustodian,
+            `/credentials/${alias}`
+        );
+    }
+
+    /**
+     * 
+     * @param request the request object (refer to PresentCredentialRequest)
+     * @returns a Verificable Presentation object
+     */
+    static async presentCredentials(
+        request: PresentCredentialsRequest | PresentCredentialIDsRequest
+    ):
+        Promise<any>
+    {
+        let result = await callAPI(
+            "POST",
+            apiPortCustodian,
+            "/credentials/present",
+            request
+        );
+        return result?.data;
     }
 }
