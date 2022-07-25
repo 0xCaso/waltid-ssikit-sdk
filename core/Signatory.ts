@@ -13,16 +13,18 @@ export class Signatory {
                                  HELPERS
     //////////////////////////////////////////////////////////////*/
 
-    static async issueRandomVC(proofType: ProofType) : Promise<any> {
+    static async issueRandomVC(proofType: ProofType, subjectDID?: string) : Promise<any> {
         let issuerKey = await Custodian.generateKey("EdDSA_Ed25519");
         let issuerDID = await Custodian.createDID("key", issuerKey.keyId.id);
-        let subjectKey = await Custodian.generateKey("EdDSA_Ed25519");
-        let subjectDID = await Custodian.createDID("key", subjectKey.keyId.id);
+        if (!subjectDID) {
+            let subjectKey = await Custodian.generateKey("EdDSA_Ed25519");
+            subjectDID = await Custodian.createDID("key", subjectKey.keyId.id);
+        }
         let baseToken = createBaseToken();
         let revocationToken = deriveRevocationToken(baseToken);
         let templates = await Signatory.getVCTemplates();
         let credentialStatus = new CredentialStatus(
-            issuerDID+"/"+revocationToken, 
+            "https://some-issuer.example/v1/revocations"+"/"+revocationToken, 
             "SimpleCredentialStatus2022"
         );
         let request = new IssueCredentialRequest(

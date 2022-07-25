@@ -1,4 +1,5 @@
 import { Custodian } from './core/Custodian';
+import { Signatory } from './core/Signatory';
 import { KeyAlgorithm, KeyFormat } from './core/utils';
 
 async function custodianKeys() {
@@ -23,14 +24,15 @@ async function custodianKeys() {
 
 async function main() {
     // await custodianKeys();
-
-    await Custodian.deleteAllKeys();
-    let key = await Custodian.generateKey("RSA");
-    key = await Custodian.getKey(key.keyId.id);
-    let exported = await Custodian.exportKey(key, "JWK", true);
-    await Custodian.deleteKey(key.keyId.id);
-    let imported = await Custodian.importKey(exported);
-    Custodian.printKeys();
+    let c = await Signatory.issueRandomVC("LD_PROOF");
+    console.log(JSON.stringify(c));
+    // await Custodian.deleteAllKeys();
+    // let key = await Custodian.generateKey("RSA");
+    // key = await Custodian.getKey(key.keyId.id);
+    // let exported = await Custodian.exportKey(key, "JWK", true);
+    // await Custodian.deleteKey(key.keyId.id);
+    // let imported = await Custodian.importKey(exported);
+    // Custodian.printKeys();
 }
 
 main()

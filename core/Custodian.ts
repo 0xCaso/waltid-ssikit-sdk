@@ -302,7 +302,7 @@ export class Custodian {
      * 
      * @returns Array of Credential IDs the custodian knows of
      */
-    static async listCredentialIDs(): Promise<any> {
+    static async getCredentialIDs(): Promise<any> {
         let result = await callAPI(
             "GET",
             apiPortCustodian,

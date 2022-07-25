@@ -1,6 +1,11 @@
 import { Custodian } from '../core/Custodian';
+import { Signatory } from '../core/Signatory';
 
 describe('Custodian Class', () => {
+
+    /*//////////////////////////////////////////////////////////////
+                             KEY MANAGEMENT
+    //////////////////////////////////////////////////////////////*/
 
     describe('Key Management', () => {
 
@@ -17,6 +22,7 @@ describe('Custodian Class', () => {
         })
         describe('getKeys', () => {
             it('should return an array of keys', async () => {
+                await Custodian.deleteAllKeys();
                 for (let i = 0; i < 5; i++) {
                     await Custodian.generateKey("RSA");
                 }
@@ -98,6 +104,10 @@ describe('Custodian Class', () => {
         })
 
     })
+
+    /*//////////////////////////////////////////////////////////////
+                             DID MANAGEMENT
+    //////////////////////////////////////////////////////////////*/
 
     describe('DID Management', () => {
 
@@ -209,4 +219,75 @@ describe('Custodian Class', () => {
         })
 
     })
+
+    /*//////////////////////////////////////////////////////////////
+                         CREDENTIALS MANAGEMENT
+    //////////////////////////////////////////////////////////////*/
+
+    describe('Credentials Management', () => {
+
+        describe('getCredentials', () => {
+            it('should return an array of credentials', async () => {
+                let credentials = await Custodian.getCredentials();
+                expect(credentials).toBeInstanceOf(Array);
+                // expect(typeof credentials[0]).toBe('string')
+            })
+            // it('should return an empty array if no credentials exist', async () => {
+            //     let credentials = await Custodian.getCredentials();
+            //     expect(credentials).toBeInstanceOf(Array);
+            //     expect(credentials.length).toBe(0);
+            // })
+        }),
+        describe('storeCredential', () => {
+            it('should store a credential', async () => {
+                let subjectKey = await Custodian.generateKey("EdDSA_Ed25519");
+                let subjectDID = await Custodian.createDID("key", subjectKey.keyId.id);
+                let lastPart = subjectDID.split(':').pop();
+                let [credential,] = await Signatory.issueRandomVC("LD_PROOF", subjectDID);
+                let listBefore = await Custodian.getCredentials();
+                await Custodian.storeCredential(`Test${lastPart}`, credential);
+                let listAfter = await Custodian.getCredentials();
+                expect(listAfter.length - listBefore.length).toBe(1);
+                let added = listAfter[listAfter.length -1];
+                expect(added).toBeInstanceOf(Object);
+                expect(added.id).toBe(credential.id);
+            }),
+            it('should throw an error if the credential already exists', async () => {
+                let [credential,] = await Signatory.issueRandomVC("LD_PROOF");
+                let alias = `Test${credential.id}`
+                await Custodian.storeCredential(alias, credential);
+                try {
+                    await Custodian.storeCredential(alias, credential);
+                } catch (error) {
+                    expect(error).toBeInstanceOf(Error);
+                }
+            })
+        });
+        describe('getCredential', () => {
+            it('should return a credential', async () => {
+                let [credential,] = await Signatory.issueRandomVC("LD_PROOF")
+                let alias = `Test${credential.id}`
+                await Custodian.storeCredential(alias, credential);
+                let retrieved = await Custodian.getCredential(alias);
+                expect(retrieved).toBeInstanceOf(Object);
+                expect(retrieved.id).toBe(credential.id);
+                expect(retrieved["@context"]).toBeInstanceOf(Object);
+            }),
+            it('should throw an error if the credential does not exist', async () => {
+                try {
+                    await Custodian.getCredential('did:monokee:123456789');
+                } catch (error) {
+                    expect(error).toBeInstanceOf(Error);
+                }
+            })
+        })
+        describe('should list all credential ids', () => {
+            it('should return an array of credential ids', async () => {
+                let retrieved = await Custodian.getCredentialIDs();
+                console.log(retrieved)
+                expect(retrieved).toBeInstanceOf(Array);
+                expect(retrieved.length).toBeGreaterThan(-1);
+            })
+        });
+    });
 })

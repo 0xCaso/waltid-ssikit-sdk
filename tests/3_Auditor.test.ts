@@ -19,7 +19,8 @@ describe('Auditor Class', () => {
             let proofType: ProofType = "LD_PROOF";
             let [credential,] = await Signatory.issueRandomVC(proofType);
             let policy = {
-                policy: "CredentialStatusPolicy"
+                // policy: "CredentialStatusPolicy"
+                policy: "SignaturePolicy"
             }
             let request = new VerificationRequest(
                 [ policy ],
