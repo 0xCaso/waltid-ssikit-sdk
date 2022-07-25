@@ -1,42 +1,20 @@
 import { Signatory } from '../core/Signatory';
 import { Custodian } from '../core/Custodian';
 import { 
-    IssueCredentialRequest, ProofConfig, ProofType, 
-    createBaseToken, deriveRevocationToken, CredentialStatus,
+    ProofType, createBaseToken, deriveRevocationToken,
     getRevocationTokenFromCredentialStatus
 } from '../core/utils';
-
-async function issueRandomVC(proofType: ProofType) : Promise<any> {
-    let issuerKey = await Custodian.generateKey("EdDSA_Ed25519");
-    let issuerDID = await Custodian.createDID("key", issuerKey.keyId.id);
-    let subjectKey = await Custodian.generateKey("EdDSA_Ed25519");
-    let subjectDID = await Custodian.createDID("key", subjectKey.keyId.id);
-    let baseToken = createBaseToken();
-    let revocationToken = deriveRevocationToken(baseToken);
-    let templates = await Signatory.getVCTemplates();
-    let credentialStatus = new CredentialStatus(
-        issuerDID+"/"+revocationToken, 
-        "SimpleCredentialStatus2022"
-    );
-    let request = new IssueCredentialRequest(
-        templates[1],
-        new ProofConfig(issuerDID, subjectDID, proofType),
-        {credentialStatus}
-    )
-    let credential = await Signatory.issueCredential(request);
-    return [credential, baseToken];
-}
 
 describe('Signatory Class', () => {
 
     describe('Verifiable Credentials', () => {
-        it('Should retrieve VC supported templates', async () => {
+        it('should retrieve VC supported templates', async () => {
             let templates = await Signatory.getVCTemplates();
             expect(templates).toBeInstanceOf(Array);
             expect(templates.length).toBeGreaterThan(0);
             expect(typeof templates[0]).toBe('string');
         });
-        it('Should retrieve a VC template', async () => {
+        it('should retrieve a VC template', async () => {
             let templates = await Signatory.getVCTemplates();
             let template = await Signatory.getVCTemplate(templates[0]);
             expect(template).toBeInstanceOf(Object);
@@ -51,8 +29,8 @@ describe('Signatory Class', () => {
         });
         it('should issue a credential', async () => {
             let proofType: ProofType = "LD_PROOF";
-            let credential = await issueRandomVC(proofType);
-            console.log(credential);
+            let credential = await Signatory.issueRandomVC(proofType);
+            console.log(JSON.stringify(credential));
             if (proofType !== "LD_PROOF") {
                 expect(typeof credential).toBe("string")
             } else {
@@ -79,7 +57,7 @@ describe('Signatory Class', () => {
         });
         it('should revoke a previously issued credential', async () => {
             let proofType: ProofType = "LD_PROOF";
-            let result = await issueRandomVC(proofType);
+            let result = await Signatory.issueRandomVC(proofType);
             let baseToken = result[1];
             let revocationToken = getRevocationTokenFromCredentialStatus(result[0].credentialStatus);
             result = await Signatory.isRevoked(revocationToken);

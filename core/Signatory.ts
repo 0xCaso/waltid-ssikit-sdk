@@ -1,9 +1,38 @@
 import { 
-    callAPI, apiPortSignatory,
+    callAPI, apiPortSignatory, ProofType,
     VCTemplate, IssueCredentialRequest,
+    createBaseToken, deriveRevocationToken,
+    CredentialStatus, ProofConfig
 } from './utils';
+// this import is just for the helper function
+import { Custodian } from './Custodian';
 
 export class Signatory {
+
+    /*//////////////////////////////////////////////////////////////
+                                 HELPERS
+    //////////////////////////////////////////////////////////////*/
+
+    static async issueRandomVC(proofType: ProofType) : Promise<any> {
+        let issuerKey = await Custodian.generateKey("EdDSA_Ed25519");
+        let issuerDID = await Custodian.createDID("key", issuerKey.keyId.id);
+        let subjectKey = await Custodian.generateKey("EdDSA_Ed25519");
+        let subjectDID = await Custodian.createDID("key", subjectKey.keyId.id);
+        let baseToken = createBaseToken();
+        let revocationToken = deriveRevocationToken(baseToken);
+        let templates = await Signatory.getVCTemplates();
+        let credentialStatus = new CredentialStatus(
+            issuerDID+"/"+revocationToken, 
+            "SimpleCredentialStatus2022"
+        );
+        let request = new IssueCredentialRequest(
+            templates[1],
+            new ProofConfig(issuerDID, subjectDID, proofType),
+            {credentialStatus}
+        )
+        let credential = await Signatory.issueCredential(request);
+        return [credential, baseToken];
+    }
 
     /*//////////////////////////////////////////////////////////////
                                CREDENTIALS
@@ -61,7 +90,7 @@ export class Signatory {
 
     // privateRevocationToken: UUIDUUID
     // publicRevocationToken: base32(sha256(privateRevocationToken)).replaceAll("=", "")
-    
+
     // everyone can check the status of a VC with the publicRevocationToken
     // only the issuer can revoke a VC with the privateRevocationToken
 

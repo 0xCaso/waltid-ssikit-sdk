@@ -4,6 +4,7 @@ import { base32 } from "rfc4648";
 import sha256 from "fast-sha256";
 import nacl from 'tweetnacl-util';
 
+// console.log errors in API Calls
 let debug = true;
 
 type Call = "GET" | "POST" | "DELETE" | "PUT";
@@ -21,6 +22,7 @@ export type KeyFormat = "JWK" | "PEM";
 export type DIDMethod = "key" | "did" | "ebsi";
 export type ProofType = "JWT" | "LD_PROOF"; // LD_PROOF is default, and human readable
 export type CredentialStatusType = "SimpleCredentialStatus2022";
+export type PolicyEngineType = "OPA";
 export type VCTemplate =
     "DataSelfDescription" |
     "VerifiableDiploma" |
@@ -76,16 +78,6 @@ export async function callAPI(
     } catch(err: any) {
         debug ? console.log(err.response.data) : null;
         return ""
-    }
-}
-
-export class CredentialStatus {
-    public id: string;
-    public type: CredentialStatusType;
-
-    constructor(id: string, type: CredentialStatusType) {
-        this.id = id;
-        this.type = type;
     }
 }
 
@@ -156,6 +148,57 @@ export class IssueCredentialRequest {
     }
 }
 
+export class CredentialStatus {
+    public id: string;
+    public type: CredentialStatusType;
+
+    constructor(id: string, type: CredentialStatusType) {
+        this.id = id;
+        this.type = type;
+    }
+}
+
+export class VerificationRequest {
+    public policies: any[];
+    public credentials: any[];
+
+    constructor(policies: any[], credentials: any[]) {
+        this.policies = policies;
+        this.credentials = credentials;
+    }
+}
+
+export class DynamicPolicyArg {
+    public name: string;
+    public description?: string;
+    public input?: Map<string, any>;
+    public dataPath?: string;
+    public policyQuery?: string;
+    public policyEngine: PolicyEngineType = "OPA";
+    public applyToVC: boolean = true;
+    public applyToVP: boolean = false;
+
+    constructor(
+        name: string, 
+        policyEngine: PolicyEngineType,
+        applyToVC: boolean,
+        applyToVP: boolean,
+        description?: string,
+        input?: Map<string, any>,
+        dataPath?: string,
+        policyQuery?: string,
+    ) {
+        this.name = name;
+        this.description = description;
+        this.input = input;
+        this.dataPath = dataPath;
+        this.policyQuery = policyQuery;
+        this.policyEngine = policyEngine;
+        this.applyToVC = applyToVC;
+        this.applyToVP = applyToVP;
+    }
+}
+
 export function getRandomUUID(): string {
     return uuidv4();
 }
@@ -170,7 +213,11 @@ export function deriveRevocationToken(baseToken: string): string {
     ).replaceAll("=", "");
 }
 
-export function getRevocationTokenFromCredentialStatus(credentialStatus: CredentialStatus): string {
+export function getRevocationTokenFromCredentialStatus(
+    credentialStatus: CredentialStatus
+): 
+    string 
+{
     let token = credentialStatus.id.split("/").pop() ?? "";
     return token;
 }
