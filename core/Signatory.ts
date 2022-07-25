@@ -59,33 +59,35 @@ export class Signatory {
                                REVOCATIONS
     //////////////////////////////////////////////////////////////*/
 
-    // TODO: check the response of the API call
+    // privateRevocationToken: UUIDUUID
+    // publicRevocationToken: base32(sha256(privateRevocationToken)).replaceAll("=", "")
+    
+    // everyone can check the status of a VC with the publicRevocationToken
+    // only the issuer can revoke a VC with the privateRevocationToken
+
     /**
      * 
-     * @param revocationToken is VC's token for the revoke
-     * @returns 
+     * @param publicRevocationToken is VC's public revocation token, used to check the status of the revocation
+     * @returns revocation result: object = { token: string, revoked: boolean, timeOfRevocation: integer }
      */
-    static async checkIfVCRevoked(revocationToken: string): Promise<any> {
+    static async isRevoked(publicRevocationToken: string): Promise<any> {
         let result = await callAPI(
             "GET", 
             apiPortSignatory,
-            `/v1/revocations/${revocationToken}`
+            `/v1/revocations/${publicRevocationToken}`
         );
         return result?.data;
     }
 
-    // TODO: check the response of the API call
     /**
      * 
-     * @param notDelegatedRevocationToken is VC's token for the revoke
-     * @returns 
+     * @param privateRevocationToken is VC's token for the revoke
      */
-    static async revokeVC(notDelegatedRevocationToken: string): Promise<any> {
-        let result = await callAPI(
+    static async revokeCredential(privateRevocationToken: string) {
+        await callAPI(
             "POST", 
             apiPortSignatory,
-            `/v1/revocations/${notDelegatedRevocationToken}`
+            `/v1/revocations/${privateRevocationToken}`
         );
-        return result?.data;
     }
 }

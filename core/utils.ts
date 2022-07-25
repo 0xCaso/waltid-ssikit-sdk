@@ -1,4 +1,10 @@
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
+import { base32 } from "rfc4648";
+import sha256 from "fast-sha256";
+import nacl from 'tweetnacl-util';
+
+let debug = true;
 
 type Call = "GET" | "POST" | "DELETE" | "PUT";
 type Port = 7000 | 7001 | 7002 | 7003 | 7004;
@@ -13,7 +19,8 @@ export const apiPortESSIF: Port = 7004;
 export type KeyAlgorithm = "RSA" | "EdDSA_Ed25519" | "ECDSA_Secp256k1";
 export type KeyFormat = "JWK" | "PEM";
 export type DIDMethod = "key" | "did" | "ebsi";
-export type ProofType = undefined | "JWT" | "LD_PROOF";
+export type ProofType = "JWT" | "LD_PROOF"; // LD_PROOF is default, and human readable
+export type CredentialStatusType = "SimpleCredentialStatus2022";
 export type VCTemplate =
     "DataSelfDescription" |
     "VerifiableDiploma" |
@@ -67,8 +74,18 @@ export async function callAPI(
         }
         return result
     } catch(err: any) {
-        // console.log(err.response.data)
+        debug ? console.log(err.response.data) : null;
         return ""
+    }
+}
+
+export class CredentialStatus {
+    public id: string;
+    public type: CredentialStatusType;
+
+    constructor(id: string, type: CredentialStatusType) {
+        this.id = id;
+        this.type = type;
     }
 }
 
@@ -100,7 +117,7 @@ export class ProofConfig {
         issueDate?: string,
         validDate?: string,
         expirationDate?: string,
-        dataProviderIdentifier?: string
+        dataProviderIdentifier?: string,
     ) {
         this.issuerDid = issuerDid;
         this.subjectDid = subjectDid;
@@ -137,4 +154,23 @@ export class IssueCredentialRequest {
         this.config = config;
         this.credentialData = credentialData;
     }
+}
+
+export function getRandomUUID(): string {
+    return uuidv4();
+}
+
+export function createBaseToken(): string {
+    return getRandomUUID() + getRandomUUID();
+}
+
+export function deriveRevocationToken(baseToken: string): string {
+    return base32.stringify(
+        sha256(nacl.decodeUTF8(baseToken))
+    ).replaceAll("=", "");
+}
+
+export function getRevocationTokenFromCredentialStatus(credentialStatus: CredentialStatus): string {
+    let token = credentialStatus.id.split("/").pop() ?? "";
+    return token;
 }
