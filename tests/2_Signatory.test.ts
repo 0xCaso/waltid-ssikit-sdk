@@ -4,6 +4,7 @@ import {
     ProofType, createBaseToken, deriveRevocationToken,
     getRevocationTokenFromCredentialStatus
 } from '../core/utils';
+import { issueRandomVC } from '../main';
 
 describe('Signatory Class', () => {
 
@@ -29,7 +30,7 @@ describe('Signatory Class', () => {
         });
         it('should issue a credential', async () => {
             let proofType: ProofType = "LD_PROOF";
-            let credential = await Signatory.issueRandomVC(proofType);
+            let credential = await issueRandomVC(proofType);
             console.log(JSON.stringify(credential));
             if (proofType !== "LD_PROOF") {
                 expect(typeof credential).toBe("string")
@@ -57,7 +58,7 @@ describe('Signatory Class', () => {
         });
         it('should revoke a previously issued credential', async () => {
             let proofType: ProofType = "LD_PROOF";
-            let result = await Signatory.issueRandomVC(proofType);
+            let result = await issueRandomVC(proofType);
             let baseToken = result[1];
             let revocationToken = getRevocationTokenFromCredentialStatus(result[0].credentialStatus);
             result = await Signatory.isRevoked(revocationToken);

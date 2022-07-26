@@ -1,6 +1,6 @@
 import { Custodian } from '../core/Custodian';
-import { Signatory } from '../core/Signatory';
 import { PresentCredentialsRequest } from '../core/utils';
+import { issueRandomVC } from '../main'
 
 describe('Custodian Class', () => {
 
@@ -238,7 +238,7 @@ describe('Custodian Class', () => {
                 let subjectKey = await Custodian.generateKey("EdDSA_Ed25519");
                 let subjectDID = await Custodian.createDID("key", subjectKey.keyId.id);
                 let lastPart = subjectDID.split(':').pop();
-                let [credential,] = await Signatory.issueRandomVC("LD_PROOF", subjectDID);
+                let [credential,] = await issueRandomVC("LD_PROOF", subjectDID);
                 let listBefore = await Custodian.getCredentials();
                 let alias = `Test${lastPart}`;
                 await Custodian.storeCredential(alias, credential);
@@ -252,7 +252,7 @@ describe('Custodian Class', () => {
                 expect(credential).toBe(undefined);
             }),
             it('should throw an error if the credential already exists', async () => {
-                let [credential,] = await Signatory.issueRandomVC("LD_PROOF");
+                let [credential,] = await issueRandomVC("LD_PROOF");
                 let lastPart = credential.id.split(':').pop();
                 let alias = `Test${lastPart}`
                 await Custodian.storeCredential(alias, credential);
@@ -264,7 +264,7 @@ describe('Custodian Class', () => {
                 await Custodian.deleteCredential(alias);
             }),
             it('should return a credential', async () => {
-                let [credential,] = await Signatory.issueRandomVC("LD_PROOF")
+                let [credential,] = await issueRandomVC("LD_PROOF")
                 let lastPart = credential.id.split(':').pop();
                 let alias = `Test${lastPart}`
                 await Custodian.storeCredential(alias, credential);
@@ -294,9 +294,8 @@ describe('Custodian Class', () => {
             it('given credential(s)', async () => {
                 let key = await Custodian.generateKey("EdDSA_Ed25519");
                 let subjectDID = await Custodian.createDID("key", key.keyId.id);
-                let [credential,] = await Signatory.issueRandomVC("LD_PROOF");
-                let credentials : Array<string> = [credential]
-                let request = new PresentCredentialsRequest(credentials, subjectDID)
+                let [credential,] = await issueRandomVC("LD_PROOF");
+                let request = new PresentCredentialsRequest([credential], subjectDID)
                 console.log(JSON.stringify(request))
                 let vp = await Custodian.presentCredentials(request);
                 console.log(vp)
@@ -307,7 +306,7 @@ describe('Custodian Class', () => {
             // it('given credential id(s) ', async () => {
             //     let key = await Custodian.generateKey("EdDSA_Ed25519");
             //     let subjectDID = await Custodian.createDID("key", key.keyId.id);
-            //     let [credential,] = await Signatory.issueRandomVC("LD_PROOF", subjectDID);
+            //     let [credential,] = await issueRandomVC("LD_PROOF", subjectDID);
             //     let lastPart = credential.id.split(':').pop();
             //     let alias = `Test${lastPart}`
             //     await Custodian.storeCredential(alias, credential);

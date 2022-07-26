@@ -1,9 +1,9 @@
 import { Auditor } from '../core/Auditor';
-import { Signatory } from '../core/Signatory';
 import { 
     VerificationRequest, ProofType, 
     DynamicPolicyArg,
 } from '../core/utils';
+import { issueRandomVC } from '../main';
 
 describe('Auditor Class', () => {
 
@@ -16,7 +16,7 @@ describe('Auditor Class', () => {
         });
         it('should verify a W3C credential', async () => {
             let proofType: ProofType = "LD_PROOF";
-            let [credential,] = await Signatory.issueRandomVC(proofType);
+            let [credential,] = await issueRandomVC(proofType);
             let CredentialStatusPolicy = {
                 policy: "CredentialStatusPolicy"
             }

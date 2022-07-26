@@ -1,13 +1,17 @@
 import { 
     callAPI, apiPortCustodian, 
     KeyAlgorithm, KeyFormat, DIDMethod,
-    PresentCredentialsRequest, PresentCredentialIDsRequest
+    PresentCredentialsRequest, PresentCredentialIDsRequest,
+    staticImplements,
 } from './utils';
+
+import { ICustodian } from '../interfaces/ICustodian';
 
 /**
  * @class Custodian
  * @description This class is used to manage keys and their associated
  */
+@staticImplements<ICustodian>()
 export class Custodian {
 
     /*//////////////////////////////////////////////////////////////
@@ -15,7 +19,6 @@ export class Custodian {
     //////////////////////////////////////////////////////////////*/
 
     static async printKeys(): Promise<void> {
-        console.log("──────────────────────────────────────────")
         let keys: Array<any> = await this.getKeys();
         if (keys.length != 0) {
             console.log("Keys found:\n");
@@ -25,18 +28,13 @@ export class Custodian {
         } else {
             console.log("There are no saved keys yet.");
         }
-        console.log("──────────────────────────────────────────")
     }
     
     static async deleteAllKeys() {
-        // console.log("──────────────────────────────────────────")
-        // console.log("Deleting all keys...\n");
         let keys = await this.getKeys();
         for (let key of keys) {
             await this.deleteKey(key.keyId.id);
         }
-        // console.log("\nDone.");
-        // console.log("──────────────────────────────────────────")
     }
 
     static async deleteAllDIDs() {
@@ -258,6 +256,10 @@ export class Custodian {
         return result?.data;
     }
 
+    /**
+     * 
+     * @param did to resolve and import to the underlying data store 
+     */
     static async importDID(did: string) {
         await callAPI(
             "POST",
@@ -316,7 +318,7 @@ export class Custodian {
      * @param alias Credential alias string (example: "MyPassport")
      * @param credential Credential object to store
      */
-    static async storeCredential(alias: string, credential: object) {
+    static async storeCredential(alias: string, credential: object): Promise<void> {
         await callAPI(
             "PUT",
             apiPortCustodian,
@@ -329,7 +331,7 @@ export class Custodian {
      * 
      * @param alias Credential's alias to delete
      */
-    static async deleteCredential(alias: string) {
+    static async deleteCredential(alias: string): Promise<void> {
         await callAPI(
             "DELETE",
             apiPortCustodian,

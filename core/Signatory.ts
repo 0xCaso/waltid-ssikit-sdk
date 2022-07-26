@@ -1,40 +1,13 @@
 import { 
-    callAPI, apiPortSignatory, ProofType,
+    callAPI, apiPortSignatory,
     VCTemplate, IssueCredentialRequest,
-    createBaseToken, deriveRevocationToken,
-    CredentialStatus, ProofConfig
+    staticImplements,
 } from './utils';
-// this import is just for the helper function
-import { Custodian } from './Custodian';
 
+import { ISignatory } from '../interfaces/ISignatory';
+
+@staticImplements<ISignatory>()
 export class Signatory {
-
-    /*//////////////////////////////////////////////////////////////
-                                 HELPERS
-    //////////////////////////////////////////////////////////////*/
-
-    static async issueRandomVC(proofType: ProofType, subjectDID?: string) : Promise<any> {
-        let issuerKey = await Custodian.generateKey("EdDSA_Ed25519");
-        let issuerDID = await Custodian.createDID("key", issuerKey.keyId.id);
-        if (!subjectDID) {
-            let subjectKey = await Custodian.generateKey("EdDSA_Ed25519");
-            subjectDID = await Custodian.createDID("key", subjectKey.keyId.id);
-        }
-        let baseToken = createBaseToken();
-        let revocationToken = deriveRevocationToken(baseToken);
-        let templates = await Signatory.getVCTemplates();
-        let credentialStatus = new CredentialStatus(
-            `http://localhost:${apiPortSignatory}/v1/revocations/`+revocationToken, 
-            "SimpleCredentialStatus2022"
-        );
-        let request = new IssueCredentialRequest(
-            templates[1],
-            new ProofConfig(issuerDID, subjectDID, proofType),
-            {credentialStatus}
-        )
-        let credential = await Signatory.issueCredential(request);
-        return [credential, baseToken];
-    }
 
     /*//////////////////////////////////////////////////////////////
                                CREDENTIALS
@@ -45,7 +18,7 @@ export class Signatory {
      * @param request is the object containing the request data (refer to IssueCredentialRequest)
      * @returns a W3C Verifiable Credential
      */
-    static async issueCredential(request: IssueCredentialRequest) {
+    static async issueCredential(request: IssueCredentialRequest): Promise<any> {
         let result = await callAPI(
             "POST", 
             apiPortSignatory,
@@ -114,7 +87,7 @@ export class Signatory {
      * 
      * @param privateRevocationToken is VC's token for the revoke
      */
-    static async revokeCredential(privateRevocationToken: string) {
+    static async revokeCredential(privateRevocationToken: string): Promise<void> {
         await callAPI(
             "POST", 
             apiPortSignatory,

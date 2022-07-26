@@ -1,8 +1,11 @@
 import { 
     callAPI, apiPortAuditor, VerificationRequest,
-    DynamicPolicyArg,
+    DynamicPolicyArg, staticImplements,
 } from './utils';
 
+import { IAuditor } from '../interfaces/IAuditor';
+
+@staticImplements<IAuditor>()
 export class Auditor {
 
     /*//////////////////////////////////////////////////////////////
@@ -80,7 +83,9 @@ export class Auditor {
      */
     static async deleteDynamicVerificationPolicy(
         name: string
-    ) {
+    ): 
+        Promise<void> 
+    {
         await callAPI(
             "DELETE",
             apiPortAuditor,

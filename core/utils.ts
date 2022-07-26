@@ -58,6 +58,11 @@ export type VCTemplate =
                                  CLASSES
     //////////////////////////////////////////////////////////////*/
 
+/* class decorator */
+export function staticImplements<T>() {
+    return <U extends T>(constructor: U) => {constructor};
+}
+
 export class ProofConfig {
     public issuerDid: string;
     public subjectDid: string;
