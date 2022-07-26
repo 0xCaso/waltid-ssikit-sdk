@@ -145,29 +145,33 @@ export class VerificationRequest {
     }
 }
 
+// https://docs.walt.id/v/ssikit/concepts/verification-policies/dynamic-policies
 export class DynamicPolicyArg {
     public name: string;
     public description?: string;
-    public input?: Map<string, any>;
-    public dataPath?: string;
-    public policyQuery?: string;
-    public policyEngine: PolicyEngineType = "OPA";
-    public applyToVC: boolean = true;
-    public applyToVP: boolean = false;
+    public input: any;
+    public policy: string;
+    public dataPath: string;
+    public policyQuery: string;
+    public policyEngine: PolicyEngineType;
+    public applyToVC: boolean;
+    public applyToVP: boolean;
 
     constructor(
         name: string, 
         policyEngine: PolicyEngineType,
         applyToVC: boolean,
         applyToVP: boolean,
+        input: any,
+        policy: string,
+        dataPath: string,
+        policyQuery: string,
         description?: string,
-        input?: Map<string, any>,
-        dataPath?: string,
-        policyQuery?: string,
     ) {
         this.name = name;
         this.description = description;
         this.input = input;
+        this.policy = policy;
         this.dataPath = dataPath;
         this.policyQuery = policyQuery;
         this.policyEngine = policyEngine;
@@ -177,20 +181,20 @@ export class DynamicPolicyArg {
 }
 
 export class PresentCredentialsRequest {
-    public credentials: any[];
+    public vcs: string[];
     public holderDid: string;
     public verifierDid?: string;
     public domain?: string;
     public challenge?: string;
 
     constructor(
-        credentials: any[],
+        vcs: string[],
         holderDid: string,
         verifierDid?: string,
         domain?: string,
         challenge?: string,
     ) {
-        this.credentials = credentials;
+        this.vcs = vcs;
         this.holderDid = holderDid;
         this.verifierDid = verifierDid;
         this.domain = domain;
@@ -199,20 +203,20 @@ export class PresentCredentialsRequest {
 }
 
 export class PresentCredentialIDsRequest {
-    public credentialsIDs: string[];
+    public vcIds: string[];
     public holderDid: string;
     public verifierDid?: string;
     public domain?: string;
     public challenge?: string;
 
     constructor(
-        credentialsIDs: string[],
+        vcIds: string[],
         holderDid: string,
         verifierDid?: string,
         domain?: string,
         challenge?: string,
     ) {
-        this.credentialsIDs = credentialsIDs;
+        this.vcIds = vcIds;
         this.holderDid = holderDid;
         this.verifierDid = verifierDid;
         this.domain = domain;

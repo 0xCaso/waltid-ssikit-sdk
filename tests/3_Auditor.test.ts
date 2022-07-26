@@ -2,8 +2,7 @@ import { Auditor } from '../core/Auditor';
 import { Signatory } from '../core/Signatory';
 import { 
     VerificationRequest, ProofType, 
-    createBaseToken, deriveRevocationToken, CredentialStatus,
-    getRevocationTokenFromCredentialStatus
+    DynamicPolicyArg,
 } from '../core/utils';
 
 describe('Auditor Class', () => {
@@ -18,18 +17,38 @@ describe('Auditor Class', () => {
         it('should verify a W3C credential', async () => {
             let proofType: ProofType = "LD_PROOF";
             let [credential,] = await Signatory.issueRandomVC(proofType);
-            let policy = {
-                // policy: "CredentialStatusPolicy"
+            let CredentialStatusPolicy = {
+                policy: "CredentialStatusPolicy"
+            }
+            let SignaturePolicy = {
                 policy: "SignaturePolicy"
             }
             let request = new VerificationRequest(
-                [ policy ],
+                [ CredentialStatusPolicy, SignaturePolicy ],
                 [ credential ],
             );
-            console.log(JSON.stringify(request));
             let result = await Auditor.verifyCredential(request);
-            console.log(result)
-            expect(result).toBeInstanceOf(Object);
+            expect(result.valid).toBe(true);
+        });
+        it('should create a dynamic verification policy, and delete', async () => {
+            let policyName = "MyPolicy";
+            let update = true;
+            let downloadPolicy = true;
+            let input = {};
+            let arg = new DynamicPolicyArg(policyName, "OPA", true, true, input, "", "", "", "test test");
+            await Auditor.createDynamicVerificationPolicy(
+                policyName,
+                arg,
+                update,
+                downloadPolicy
+            );
+            let policies = await Auditor.getVerificationPolicies();
+            let added = policies[policies.length - 1];
+            expect(added.id).toBe(policyName);
+            await Auditor.deleteDynamicVerificationPolicy(added.id);
+            policies = await Auditor.getVerificationPolicies();
+            let last = policies[policies.length - 1];
+            expect(last.id).not.toBe(policyName);
         });
     });
 

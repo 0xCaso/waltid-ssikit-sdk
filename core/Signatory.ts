@@ -24,7 +24,7 @@ export class Signatory {
         let revocationToken = deriveRevocationToken(baseToken);
         let templates = await Signatory.getVCTemplates();
         let credentialStatus = new CredentialStatus(
-            "https://some-issuer.example/v1/revocations"+"/"+revocationToken, 
+            `http://localhost:${apiPortSignatory}/v1/revocations/`+revocationToken, 
             "SimpleCredentialStatus2022"
         );
         let request = new IssueCredentialRequest(

@@ -23,16 +23,16 @@ async function custodianKeys() {
 }
 
 async function main() {
-    // await custodianKeys();
-    let c = await Signatory.issueRandomVC("LD_PROOF");
-    console.log(JSON.stringify(c));
-    // await Custodian.deleteAllKeys();
-    // let key = await Custodian.generateKey("RSA");
-    // key = await Custodian.getKey(key.keyId.id);
-    // let exported = await Custodian.exportKey(key, "JWK", true);
-    // await Custodian.deleteKey(key.keyId.id);
-    // let imported = await Custodian.importKey(exported);
-    // Custodian.printKeys();
+    let [cred, ] = await Signatory.issueRandomVC("LD_PROOF");
+    console.log(1)
+    console.log(cred)
+    await Custodian.storeCredential("MIA", cred);
+    let stored = await Custodian.getCredential("MIA");
+    console.log(2)
+    console.log(stored)
+    await Custodian.deleteCredential("MIA");
+    console.log(3)
+    await Custodian.getCredential("MIA");
 }
 
 main()

@@ -1,5 +1,6 @@
 import { Custodian } from '../core/Custodian';
 import { Signatory } from '../core/Signatory';
+import { PresentCredentialsRequest } from '../core/utils';
 
 describe('Custodian Class', () => {
 
@@ -230,48 +231,48 @@ describe('Custodian Class', () => {
             it('should return an array of credentials', async () => {
                 let credentials = await Custodian.getCredentials();
                 expect(credentials).toBeInstanceOf(Array);
-                // expect(typeof credentials[0]).toBe('string')
             })
-            // it('should return an empty array if no credentials exist', async () => {
-            //     let credentials = await Custodian.getCredentials();
-            //     expect(credentials).toBeInstanceOf(Array);
-            //     expect(credentials.length).toBe(0);
-            // })
         }),
-        describe('storeCredential', () => {
-            it('should store a credential', async () => {
+        describe('storeCredential - getCredential - deleteCredential', () => {
+            it('should store a credential, and delete it', async () => {
                 let subjectKey = await Custodian.generateKey("EdDSA_Ed25519");
                 let subjectDID = await Custodian.createDID("key", subjectKey.keyId.id);
                 let lastPart = subjectDID.split(':').pop();
                 let [credential,] = await Signatory.issueRandomVC("LD_PROOF", subjectDID);
                 let listBefore = await Custodian.getCredentials();
-                await Custodian.storeCredential(`Test${lastPart}`, credential);
+                let alias = `Test${lastPart}`;
+                await Custodian.storeCredential(alias, credential);
                 let listAfter = await Custodian.getCredentials();
                 expect(listAfter.length - listBefore.length).toBe(1);
                 let added = listAfter[listAfter.length -1];
                 expect(added).toBeInstanceOf(Object);
                 expect(added.id).toBe(credential.id);
+                await Custodian.deleteCredential(alias);
+                credential = await Custodian.getCredential(added.id);
+                expect(credential).toBe(undefined);
             }),
             it('should throw an error if the credential already exists', async () => {
                 let [credential,] = await Signatory.issueRandomVC("LD_PROOF");
-                let alias = `Test${credential.id}`
+                let lastPart = credential.id.split(':').pop();
+                let alias = `Test${lastPart}`
                 await Custodian.storeCredential(alias, credential);
                 try {
                     await Custodian.storeCredential(alias, credential);
                 } catch (error) {
                     expect(error).toBeInstanceOf(Error);
                 }
-            })
-        });
-        describe('getCredential', () => {
+                await Custodian.deleteCredential(alias);
+            }),
             it('should return a credential', async () => {
                 let [credential,] = await Signatory.issueRandomVC("LD_PROOF")
-                let alias = `Test${credential.id}`
+                let lastPart = credential.id.split(':').pop();
+                let alias = `Test${lastPart}`
                 await Custodian.storeCredential(alias, credential);
                 let retrieved = await Custodian.getCredential(alias);
                 expect(retrieved).toBeInstanceOf(Object);
                 expect(retrieved.id).toBe(credential.id);
                 expect(retrieved["@context"]).toBeInstanceOf(Object);
+                await Custodian.deleteCredential(alias);
             }),
             it('should throw an error if the credential does not exist', async () => {
                 try {
@@ -280,7 +281,7 @@ describe('Custodian Class', () => {
                     expect(error).toBeInstanceOf(Error);
                 }
             })
-        })
+        });
         describe('should list all credential ids', () => {
             it('should return an array of credential ids', async () => {
                 let retrieved = await Custodian.getCredentialIDs();
@@ -288,6 +289,36 @@ describe('Custodian Class', () => {
                 expect(retrieved).toBeInstanceOf(Array);
                 expect(retrieved.length).toBeGreaterThan(-1);
             })
+        });
+        describe('should create a Verifiable Presentation', () => {
+            it('given credential(s)', async () => {
+                let key = await Custodian.generateKey("EdDSA_Ed25519");
+                let subjectDID = await Custodian.createDID("key", key.keyId.id);
+                let [credential,] = await Signatory.issueRandomVC("LD_PROOF");
+                let credentials : Array<string> = [credential]
+                let request = new PresentCredentialsRequest(credentials, subjectDID)
+                console.log(JSON.stringify(request))
+                let vp = await Custodian.presentCredentials(request);
+                console.log(vp)
+                expect(vp).toBeInstanceOf(Object);
+                expect(vp.id).toBe(credential.id);
+                expect(vp["@context"]).toBeInstanceOf(Object);
+            })
+            // it('given credential id(s) ', async () => {
+            //     let key = await Custodian.generateKey("EdDSA_Ed25519");
+            //     let subjectDID = await Custodian.createDID("key", key.keyId.id);
+            //     let [credential,] = await Signatory.issueRandomVC("LD_PROOF", subjectDID);
+            //     let lastPart = credential.id.split(':').pop();
+            //     let alias = `Test${lastPart}`
+            //     await Custodian.storeCredential(alias, credential);
+            //     let request = new PresentCredentialsRequest(credential, subjectDID)
+            //     let vp = await Custodian.presentCredentials(request)
+            //     console.log(vp)
+            //     expect(vp).toBeInstanceOf(Object);
+            //     expect(vp.id).toBe(credential.id);
+            //     expect(vp["@context"]).toBeInstanceOf(Object);
+            //     await Custodian.deleteCredential(alias);
+            // })
         });
     });
 })
