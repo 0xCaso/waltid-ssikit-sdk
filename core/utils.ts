@@ -7,6 +7,10 @@ import nacl from 'tweetnacl-util';
 // console.log errors in API Calls
 let debug = true;
 
+if (!debug) {
+    console.log = function() {}
+}
+
 type Call = "GET" | "POST" | "DELETE" | "PUT";
 type Port = 7000 | 7001 | 7002 | 7003 | 7004;
 
@@ -258,7 +262,7 @@ export async function callAPI(
         }
         return result
     } catch(err: any) {
-        debug ? console.log(err.response.data) : null;
+        console.log(err.response.data);
         return ""
     }
 }

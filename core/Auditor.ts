@@ -14,7 +14,7 @@ export class Auditor {
 
     /**
      * 
-     * @returns an array of VerificationPolicy objects { applyToVC, applyToVP, id, description }
+     * @returns an array of VerificationPolicy JSON objects { applyToVC, applyToVP, id, description }
      */
     static async getVerificationPolicies(): Promise<any> {
         let result = await callAPI(
@@ -27,7 +27,7 @@ export class Auditor {
 
     /**
      * 
-     * @param request is the object containing the request data (refer to VerificationRequest)
+     * @param request is the object containing the request data (refer to VerificationRequest type)
      * @returns an array of VerificationResponse objects { valid, results }
      */
     static async verifyCredential(request: VerificationRequest): Promise<any> {

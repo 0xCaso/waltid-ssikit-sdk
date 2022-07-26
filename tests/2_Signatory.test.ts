@@ -4,7 +4,7 @@ import {
     ProofType, createBaseToken, deriveRevocationToken,
     getRevocationTokenFromCredentialStatus
 } from '../core/utils';
-import { issueRandomVC } from '../main';
+import { issueRandomVC } from '../core/lib';
 
 describe('Signatory Class', () => {
 

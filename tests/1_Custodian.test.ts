@@ -1,6 +1,6 @@
 import { Custodian } from '../core/Custodian';
 import { PresentCredentialsRequest } from '../core/utils';
-import { issueRandomVC } from '../main'
+import { issueRandomVC } from '../core/lib'
 
 describe('Custodian Class', () => {
 

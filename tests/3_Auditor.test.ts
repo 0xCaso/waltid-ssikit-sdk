@@ -3,7 +3,7 @@ import {
     VerificationRequest, ProofType, 
     DynamicPolicyArg,
 } from '../core/utils';
-import { issueRandomVC } from '../main';
+import { issueRandomVC } from '../core/lib';
 
 describe('Auditor Class', () => {
 
