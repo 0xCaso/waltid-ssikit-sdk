@@ -234,6 +234,22 @@ export class PresentCredentialIDsRequest {
     }
 }
 
+export class EbsiTimestampRequest {
+    public did: string;
+    public ethDIDAlias?: string;
+    public data: string;
+
+    constructor(
+        did: string,
+        data: object,
+        ethDidAlias?: string,
+    ) {
+        this.did = did;
+        this.ethDIDAlias = ethDidAlias;
+        this.data = JSON.stringify(data);
+    }
+}
+
     /*//////////////////////////////////////////////////////////////
                                 FUNCTIONS
     //////////////////////////////////////////////////////////////*/

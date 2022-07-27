@@ -1,6 +1,6 @@
 import { 
     callAPI, apiPortESSIF,
-    staticImplements,
+    staticImplements, EbsiTimestampRequest,
 } from './utils';
 
 import { IESSIF } from '../interfaces/IESSIF';
@@ -66,15 +66,15 @@ export class ESSIF {
         }
     }
 
-    static async createTimestamp(did: string, ethDIDAlias: string, data: string): Promise<string> {
+    static async createTimestamp(request: EbsiTimestampRequest): Promise<string> {
         let response = await callAPI(
             "POST",
             apiPortESSIF,
             `/v1/client/timestamp`,
             {
-                did: did,
-                ethDidAlias: ethDIDAlias,
-                data: data,
+                did: request.did,
+                ethDidAlias: request.ethDIDAlias,
+                data: request.data,
             }
         );
         if (response.status === 200) {

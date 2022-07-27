@@ -1,6 +1,7 @@
 import { ESSIF } from '../core/ESSIF';
 import { Custodian } from '../core/Custodian';
 import fs from 'fs';
+import { EbsiTimestampRequest } from '../core/utils';
 
 jest.setTimeout(50000);
 
@@ -30,7 +31,7 @@ describe('ESSIF Class', () => {
             key = await Custodian.generateKey("ECDSA_Secp256k1");
             // console.log(`Generated key: ${key.keyId.id}`);
             did = await Custodian.createDID("ebsi", key);
-            // console.log(`Generated DID: ${did}`);
+            console.log(`Generated DID: ${did}`);
             let VC = await ESSIF.onboard(bearerToken, did);
             let idVC = VC.verifiableCredential.id.split(":");
             expect(idVC[0]).toBe("vc");
@@ -48,7 +49,11 @@ describe('ESSIF Class', () => {
 
     describe('Timestamps', () => {
         it('should create a timestamp', async () => {
-            // TODO: do test
+            let data = {"test": "test"};
+            let request = new EbsiTimestampRequest(did, data);
+            console.log(JSON.stringify(request))
+            let result = await ESSIF.createTimestamp(request);
+            expect(result.substring(0, 2)).toBe("0x");
         });
         it('should get a timestamp by ID', async () => {
             // https://api.preprod.ebsi.eu/timestamp/v2/timestamps
