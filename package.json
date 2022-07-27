@@ -14,7 +14,7 @@
     "uuid": "^8.3.2"
   },
   "scripts": {
-    "test": "jest --runInBand --coverage",
-    "clear": "cd .. && cd waltid-ssikit && rm -r data/credential-store"
+    "test": "clear; echo \"$(tput setaf 2)ATTENTION: remember to set the bearerToken in tests/4_ESSIF.test.ts1 $(tput setaf 7)\"; npm run clear; jest --runInBand --coverage",
+    "clear": "cd .. && cd waltid-ssikit && sudo rm -r data/credential-store"
   }
 }

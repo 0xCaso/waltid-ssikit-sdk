@@ -5,7 +5,7 @@ import sha256 from "fast-sha256";
 import nacl from 'tweetnacl-util';
 
 // console.log errors in API Calls
-let debug = false;
+export let debug = true;
 
 if (!debug) {
     console.log = function() {}
@@ -197,13 +197,14 @@ export class PresentCredentialsRequest {
     public challenge?: string;
 
     constructor(
-        vcs: string[],
+        vcs: object[],
         holderDid: string,
         verifierDid?: string,
         domain?: string,
         challenge?: string,
     ) {
-        this.vcs = vcs;
+        // we pass the array of VC objects, then we transform to string for the APIs
+        this.vcs = vcs.map(vc => JSON.stringify(vc));
         this.holderDid = holderDid;
         this.verifierDid = verifierDid;
         this.domain = domain;
@@ -262,7 +263,7 @@ export async function callAPI(
         }
         return result
     } catch(err: any) {
-        console.log(err.response.data);
+        console.error(err.response.data);
         return ""
     }
 }

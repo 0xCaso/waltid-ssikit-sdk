@@ -1,5 +1,6 @@
 import { ESSIF } from '../core/ESSIF';
 import { Custodian } from '../core/Custodian';
+import fs from 'fs';
 
 jest.setTimeout(50000);
 
@@ -7,16 +8,29 @@ describe('ESSIF Class', () => {
     let key: any, did: string
 
     // Go to https://app.preprod.ebsi.eu/users-onboarding, select 'Onboard with Captcha' > 'Desktop Wallet',
-    // copy the token and paste it here (it will be valid for 15 minutes):
-    let bearerToken = "YOUR_TOKEN";
+    // click to download and save it into "tests" folder
+    let bearerToken = ""
+
+    fs.stat('./tests/sessionToken.json', (err, stats) => {
+        let lastModified = stats.mtime;
+        let fifteenMinutesAgo = new Date(new Date().getTime() - 15 * 60 * 1000);
+        if (lastModified < fifteenMinutesAgo) {
+            console.log("Session token is older than 15 minutes. Please download it and re-run the tests.")
+            process.kill(0);
+        }
+    });
+
+    fs.readFile('./tests/sessionToken.json', (err, data) => {
+        bearerToken = JSON.parse(data.toString()).sessionToken;
+    })
     
     describe('Registering a new DID', () => {
         it('should onboard a DID', async () => {
             // algo must be "ECDSA_SECP256K1" in order to sign txs on ETH
             key = await Custodian.generateKey("ECDSA_Secp256k1");
-            console.log(`Generated key: ${key.keyId.id}`);
+            // console.log(`Generated key: ${key.keyId.id}`);
             did = await Custodian.createDID("ebsi", key);
-            console.log(`Generated DID: ${did}`);
+            // console.log(`Generated DID: ${did}`);
             let VC = await ESSIF.onboard(bearerToken, did);
             let idVC = VC.verifiableCredential.id.split(":");
             expect(idVC[0]).toBe("vc");
@@ -34,7 +48,7 @@ describe('ESSIF Class', () => {
 
     describe('Timestamps', () => {
         it('should create a timestamp', async () => {
-
+            // TODO: do test
         });
         it('should get a timestamp by ID', async () => {
             // https://api.preprod.ebsi.eu/timestamp/v2/timestamps

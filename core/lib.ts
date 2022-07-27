@@ -12,10 +12,10 @@ import { Auditor } from './Auditor';
  */
 export async function issueRandomVC(proofType: utils.ProofType, subjectDID?: string) : Promise<any> {
     let issuerKey = await Custodian.generateKey("EdDSA_Ed25519");
-    let issuerDID = await Custodian.createDID("key", issuerKey.keyId.id);
+    let issuerDID = await Custodian.createDID("key", issuerKey);
     if (!subjectDID) {
         let subjectKey = await Custodian.generateKey("EdDSA_Ed25519");
-        subjectDID = await Custodian.createDID("key", subjectKey.keyId.id);
+        subjectDID = await Custodian.createDID("key", subjectKey);
     }
     let baseToken = utils.createBaseToken();
     let revocationToken = utils.deriveRevocationToken(baseToken);
@@ -30,6 +30,6 @@ export async function issueRandomVC(proofType: utils.ProofType, subjectDID?: str
         {credentialStatus}
     )
     let credential = await Signatory.issueCredential(request);
-    console.log(credential)
+    console.log(JSON.stringify(credential))
     return [credential, baseToken];
 }

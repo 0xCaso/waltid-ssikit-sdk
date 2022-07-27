@@ -1,5 +1,5 @@
 import { Custodian } from '../core/Custodian';
-import { PresentCredentialsRequest } from '../core/utils';
+import { PresentCredentialsRequest, PresentCredentialIDsRequest } from '../core/utils';
 import { issueRandomVC } from '../core/lib'
 
 describe('Custodian Class', () => {
@@ -51,7 +51,7 @@ describe('Custodian Class', () => {
         describe('deleteKey', () => {
             it('should delete a key', async () => {
                 let key = await Custodian.generateKey("RSA");
-                await Custodian.deleteKey(key.keyId.id);
+                await Custodian.deleteKey(key);
                 let keys = await Custodian.getKeys();
                 expect(keys.length).toBe(0);
             }),
@@ -82,7 +82,7 @@ describe('Custodian Class', () => {
             it('should import a key', async () => {
                 let key = await Custodian.generateKey("RSA");
                 let exported = await Custodian.exportKey(key, "JWK", true);
-                await Custodian.deleteKey(key.keyId.id);
+                await Custodian.deleteKey(key);
                 let imported = await Custodian.importKey(exported);
                 expect(typeof imported).toBe('string');
             }),
@@ -119,7 +119,7 @@ describe('Custodian Class', () => {
         describe('getDIDs', () => {
             it('should return an array of DIDs', async () => {
                 let key = await Custodian.generateKey("EdDSA_Ed25519");
-                await Custodian.createDID("key", key.keyId.id);
+                await Custodian.createDID("key", key);
                 let dids = await Custodian.getDIDs();
                 expect(dids).toBeInstanceOf(Array);
                 expect(typeof dids[0]).toBe('string')
@@ -128,7 +128,7 @@ describe('Custodian Class', () => {
         describe('getDID', () => {
             it('should return a DID', async () => {
                 let key = await Custodian.generateKey("EdDSA_Ed25519");
-                await Custodian.createDID("key", key.keyId.id);
+                await Custodian.createDID("key", key);
                 let dids = await Custodian.getDIDs();
                 let did = await Custodian.getDID(dids[0]);
                 expect(did).toBeInstanceOf(Object);
@@ -146,7 +146,7 @@ describe('Custodian Class', () => {
         describe('createDID', () => {
             it('should create a DID', async () => {
                 let key = await Custodian.generateKey("EdDSA_Ed25519");
-                let did = await Custodian.createDID("key", key.keyId.id);
+                let did = await Custodian.createDID("key", key);
                 expect(typeof did).toBe('string');
                 let didParts = did.split(':');
                 expect(didParts[0]).toBe("did");
@@ -155,8 +155,8 @@ describe('Custodian Class', () => {
             it('should throw an error if the DID already exists', async () => {
                 try {
                     let key = await Custodian.generateKey("EdDSA_Ed25519");
-                    await Custodian.createDID("key", key.keyId.id);
-                    await Custodian.createDID("key", key.keyId.id);
+                    await Custodian.createDID("key", key);
+                    await Custodian.createDID("key", key);
                 } catch (error) {
                     expect(error).toBeInstanceOf(Error);
                 }
@@ -165,7 +165,7 @@ describe('Custodian Class', () => {
         describe('deleteDID', () => {
             it('should delete a DID', async () => {
                 let key = await Custodian.generateKey("EdDSA_Ed25519");
-                let did = await Custodian.createDID("key", key.keyId.id);
+                let did = await Custodian.createDID("key", key);
                 await Custodian.deleteDID(did);
                 let dids = await Custodian.getDIDs();
                 expect(dids.length).toBe(0);
@@ -181,7 +181,7 @@ describe('Custodian Class', () => {
         describe('resolveDID', () => {
             it('should resolve a DID', async () => {
                 let key = await Custodian.generateKey("EdDSA_Ed25519");
-                let did = await Custodian.createDID("key", key.keyId.id);
+                let did = await Custodian.createDID("key", key);
                 let resolved = await Custodian.resolveDID(did);
                 expect(resolved).toBeInstanceOf(Object);
                 expect(resolved.id).toBe(did);
@@ -198,12 +198,12 @@ describe('Custodian Class', () => {
         describe('importDID', () => {
             it('should import a DID', async () => {
                 let key = await Custodian.generateKey("EdDSA_Ed25519");
-                let did = await Custodian.createDID("key", key.keyId.id);
+                let did = await Custodian.createDID("key", key);
                 await Custodian.importDID(did);
             }),
             it('should throw an error if the DID already exists', async () => {
                 let key = await Custodian.generateKey("EdDSA_Ed25519");
-                let did = await Custodian.createDID("key", key.keyId.id);
+                let did = await Custodian.createDID("key", key);
                 try {
                     await Custodian.importDID(did);
                 } catch (error) {
@@ -236,7 +236,7 @@ describe('Custodian Class', () => {
         describe('storeCredential - getCredential - deleteCredential', () => {
             it('should store a credential, and delete it', async () => {
                 let subjectKey = await Custodian.generateKey("EdDSA_Ed25519");
-                let subjectDID = await Custodian.createDID("key", subjectKey.keyId.id);
+                let subjectDID = await Custodian.createDID("key", subjectKey);
                 let lastPart = subjectDID.split(':').pop();
                 let [credential,] = await issueRandomVC("LD_PROOF", subjectDID);
                 let listBefore = await Custodian.getCredentials();
@@ -285,7 +285,7 @@ describe('Custodian Class', () => {
         describe('should list all credential ids', () => {
             it('should return an array of credential ids', async () => {
                 let retrieved = await Custodian.getCredentialIDs();
-                console.log(retrieved)
+                // TODO: fix
                 expect(retrieved).toBeInstanceOf(Array);
                 expect(retrieved.length).toBeGreaterThan(-1);
             })
@@ -293,31 +293,36 @@ describe('Custodian Class', () => {
         describe('should create a Verifiable Presentation', () => {
             it('given credential(s)', async () => {
                 let key = await Custodian.generateKey("EdDSA_Ed25519");
-                let subjectDID = await Custodian.createDID("key", key.keyId.id);
-                let [credential,] = await issueRandomVC("LD_PROOF");
-                let request = new PresentCredentialsRequest([credential], subjectDID)
-                console.log(JSON.stringify(request))
+                let subjectDID = await Custodian.createDID("key", key);
+                let [credential1,] = await issueRandomVC("LD_PROOF");
+                let [credential2,] = await issueRandomVC("LD_PROOF");
+                let request = new PresentCredentialsRequest([credential1, credential2], subjectDID)
                 let vp = await Custodian.presentCredentials(request);
-                console.log(vp)
                 expect(vp).toBeInstanceOf(Object);
-                expect(vp.id).toBe(credential.id);
+                expect(vp.verifiableCredential[0].id).toBe(credential1.id);
+                expect(vp.verifiableCredential[1].id).toBe(credential2.id);
                 expect(vp["@context"]).toBeInstanceOf(Object);
             })
-            // it('given credential id(s) ', async () => {
-            //     let key = await Custodian.generateKey("EdDSA_Ed25519");
-            //     let subjectDID = await Custodian.createDID("key", key.keyId.id);
-            //     let [credential,] = await issueRandomVC("LD_PROOF", subjectDID);
-            //     let lastPart = credential.id.split(':').pop();
-            //     let alias = `Test${lastPart}`
-            //     await Custodian.storeCredential(alias, credential);
-            //     let request = new PresentCredentialsRequest(credential, subjectDID)
-            //     let vp = await Custodian.presentCredentials(request)
-            //     console.log(vp)
-            //     expect(vp).toBeInstanceOf(Object);
-            //     expect(vp.id).toBe(credential.id);
-            //     expect(vp["@context"]).toBeInstanceOf(Object);
-            //     await Custodian.deleteCredential(alias);
-            // })
+            it('given credential id(s) ', async () => {
+                let key = await Custodian.generateKey("EdDSA_Ed25519");
+                let subjectDID = await Custodian.createDID("key", key);
+                let [credential1,] = await issueRandomVC("LD_PROOF");
+                let lastPart1 = credential1.id.split(':').pop();
+                let alias1 = `Test${lastPart1}`
+                await Custodian.storeCredential(alias1, credential1);
+                let [credential2,] = await issueRandomVC("LD_PROOF");
+                let lastPart2 = credential2.id.split(':').pop();
+                let alias2 = `Test${lastPart2}`
+                await Custodian.storeCredential(alias2, credential2);
+                let request = new PresentCredentialIDsRequest([alias1, alias2], subjectDID)
+                let vp = await Custodian.presentCredentials(request);
+                expect(vp).toBeInstanceOf(Object);
+                expect(vp.verifiableCredential[0].id).toBe(credential1.id);
+                expect(vp.verifiableCredential[1].id).toBe(credential2.id);
+                expect(vp["@context"]).toBeInstanceOf(Object);
+                await Custodian.deleteCredential(alias1);
+                await Custodian.deleteCredential(alias2);
+            })
         });
     });
 })

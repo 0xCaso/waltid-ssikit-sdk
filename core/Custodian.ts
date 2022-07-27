@@ -33,7 +33,7 @@ export class Custodian {
     static async deleteAllKeys() {
         let keys = await this.getKeys();
         for (let key of keys) {
-            await this.deleteKey(key.keyId.id);
+            await this.deleteKey(key);
         }
     }
 
@@ -350,10 +350,16 @@ export class Custodian {
     ):
         Promise<any>
     {
+        let url = ""
+        if (request instanceof PresentCredentialsRequest) {
+            url = "/credentials/present";
+        } else {
+            url = "/credentials/presentIds";
+        }
         let result = await callAPI(
             "POST",
             apiPortCustodian,
-            "/credentials/present",
+            url,
             request
         );
         return result?.data;

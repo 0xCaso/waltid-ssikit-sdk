@@ -4,8 +4,10 @@ import * as utils from './core/utils';
 import { issueRandomVC } from './core/lib'
 
 async function main() {
-    let [cred, ] = await issueRandomVC("LD_PROOF");
-    console.log(JSON.stringify(cred))
+    if (!utils.debug) {
+        console.warn("ATTENTION: debug mode is disabled, so console.log is not shown. Enable it in utils.ts.")
+    }
+    await issueRandomVC("LD_PROOF");
 }
 
 main()
