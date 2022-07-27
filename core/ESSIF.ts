@@ -5,6 +5,8 @@ import {
 
 import { IESSIF } from '../interfaces/IESSIF';
 
+// https://docs.walt.id/v/ssikit/usage-examples/usage-examples/onboarding-and-dids
+
 @staticImplements<IESSIF>()
 export class ESSIF {
     
@@ -12,68 +14,103 @@ export class ESSIF {
                               ESSIF CLIENT
     //////////////////////////////////////////////////////////////*/
     
-        static async onboard(bearerToken: string, did: string): Promise<void> {
-            let response = await callAPI(
-                "POST",
-                apiPortESSIF,
-                `/v1/client/onboard`,
-                {
-                    bearerToken: bearerToken,
-                    did: did,
-                }
-            );
-            if (response.status === 200) {
-                console.log("Onboarded successfully.");
-            } else {
-                console.log("Onboard failed.");
+    /**
+     * 
+     * @param bearerToken the token to use for EBSI interaction
+     * @param did the DID to onboard
+     * @returns the VC of the onboarding, or an error message
+     */
+    static async onboard(bearerToken: string, did: string): Promise<any> {
+        let response = await callAPI(
+            "POST",
+            apiPortESSIF,
+            `/v1/client/onboard`,
+            {
+                bearerToken: bearerToken,
+                did: did,
             }
+        );
+        if (response.status === 200) {
+            return JSON.parse(response?.data);
+        } else {
+            return "Onboard failed.";
         }
-    
-        static async auth(did: string): Promise<string> {
-            let response = await callAPI(
-                "POST",
-                `http://localhost:${apiPortESSIF}/auth`,
-                {
-                    did: did,
-                }
-            );
-            if (response.status === 200) {
-                return response.data.bearerToken;
-            } else {
-                console.log("Auth failed.");
-                return "";
+    }
+
+    static async auth(did: string): Promise<string> {
+        let response = await callAPI(
+            "POST",
+            apiPortESSIF,
+            `/v1/client/auth`,
+            JSON.parse(JSON.stringify(did))
+        );
+        if (response.status === 200) {
+            return "Authenticated successfully.";
+        } else {
+            return "Auth failed.";
+        }
+    }
+
+    static async registerDID(did: string): Promise<string> {
+        let response = await callAPI(
+            "POST",
+            apiPortESSIF,
+            `/v1/client/registerDid`,
+            JSON.parse(JSON.stringify(did))
+        );
+        if (response.status === 200) {
+            return "Registered successfully.";
+        } else {
+            console.log("RegisterDID failed.");
+            return "RegisterDID failed.";
+        }
+    }
+
+    static async createTimestamp(did: string, ethDIDAlias: string, data: string): Promise<string> {
+        let response = await callAPI(
+            "POST",
+            apiPortESSIF,
+            `/v1/client/timestamp`,
+            {
+                did: did,
+                ethDidAlias: ethDIDAlias,
+                data: data,
             }
+        );
+        if (response.status === 200) {
+            return response?.data;
+        } else {
+            console.log("CreateTimestamp failed.");
+            return "";
         }
-    
-        static async registerDID(did: string): Promise<string> {
-            let response = await callAPI(
-                "POST",
-                `http://localhost:${apiPortESSIF}/registerDID`,
-                {
-                    did: did,
-                }
-            );
-            if (response.status === 200) {
-                return response.data.did;
-            } else {
-                console.log("RegisterDID failed.");
-                return "";
-            }
+    }
+
+    static async getTimestampByID(timestampID: string): Promise<string> {
+        let response = await callAPI(
+            "POST",
+            apiPortESSIF,
+            `/v1/client/timestamp/id/${timestampID}`,
+        );
+        if (response.status === 200) {
+            return response?.data;
+        } else {
+            console.log("GetTimestampByID failed.");
+            return "";
         }
+    }
+
+    static async getTimestampByTXHash(txHash: string): Promise<string> {
+        let response = await callAPI(
+            "POST",
+            apiPortESSIF,
+            `/v1/client/timestamp/txhash/${txHash}`,
+        );
+        if (response.status === 200) {
+            return response?.data;
+        } else {
+            console.log("GetTimestampByTXHash failed.");
+            return "";
+        }
+    }
     
-        static async createTimestamp(did: string, ethDIDAlias: string, data: string): Promise<string> {
-            let response = await callAPI(
-                "POST",
-                `http://localhost:${apiPortESSIF}/createTimestamp`,
-                {
-                    did: did,
-                    ethDIDAlias: ethDIDAlias,
-                    data: data,
-                }
-            );
-            if (response.status === 200) {
-                return response.data.timestampID;
-            } else {
-                console.log("CreateTimestamp failed.");
-                return "";
 }

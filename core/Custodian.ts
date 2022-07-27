@@ -201,19 +201,20 @@ export class Custodian {
     /**
      * 
      * @param method DID method. Admitted values: key, web, ebsi
-     * @param keyId KeyID string
+     * @param key Key object or KeyID string
      * @param didWebDomain DID web domain string
      * @param didWebPath DID web path string
      * @returns DID id string
      */
     static async createDID(
         method: DIDMethod, 
-        keyId: string, 
+        key: any, 
         didWebDomain?: string, 
         didWebPath?: string
     ): 
         Promise<string> 
     {
+        let keyId = this.checkIfStringOrObject(key, "key");
         let result = await callAPI(
             "POST",
             apiPortCustodian,
