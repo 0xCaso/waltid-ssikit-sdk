@@ -7,6 +7,7 @@ import { issueRandomVC } from '../core/lib';
 
 describe('Auditor Class', () => {
 
+    // must run ./ssikit.sh with "sudo" or this test could fail
     describe('Verification Policies', () => {
         it('should retrieve the verification policies', async () => {
             let policies = await Auditor.getVerificationPolicies();

@@ -6,7 +6,7 @@ export interface IESSIF {
     registerDID(did: string): Promise<string>;
     createTimestamp(did: string, ethDIDAlias: string, data: string): Promise<string>;
     
-    getTimestampByID(timestampID: string): Promise<string>;
-    getTimestampByTXHash(txHash: string): Promise<string>;
+    getTimestampByID(timestampID: string): Promise<any>;
+    getTimestampByTXHash(txHash: string): Promise<any>;
 
 }

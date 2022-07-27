@@ -1,12 +1,14 @@
 import { ESSIF } from '../core/ESSIF';
 import { Custodian } from '../core/Custodian';
 
+jest.setTimeout(50000);
+
 describe('ESSIF Class', () => {
     let key: any, did: string
 
     // Go to https://app.preprod.ebsi.eu/users-onboarding, select 'Onboard with Captcha' > 'Desktop Wallet',
-    // copy the token and paste it here:
-    let bearerToken = "eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NTg5MTc4MTAsImlhdCI6MTY1ODkxNjkxMCwiaXNzIjoiZGlkOmVic2k6emNHdnFnWlRIQ3Rramd0Y0tSTDdIOGsiLCJvbmJvYXJkaW5nIjoicmVjYXB0Y2hhIiwidmFsaWRhdGVkSW5mbyI6eyJhY3Rpb24iOiJsb2dpbiIsImNoYWxsZW5nZV90cyI6IjIwMjItMDctMjdUMTA6MTU6MDlaIiwiaG9zdG5hbWUiOiJhcHAucHJlcHJvZC5lYnNpLmV1Iiwic2NvcmUiOjAuOSwic3VjY2VzcyI6dHJ1ZX19.A886KpEvku2rB-dKcsTrypqFXMT0Hmkt5THTQQGInVuhQKMBPI-NqnbbQInrheGYuEUgMa6Kflbu1i4ouItktg";
+    // copy the token and paste it here (it will be valid for 15 minutes):
+    let bearerToken = "YOUR_TOKEN";
     
     describe('Registering a new DID', () => {
         it('should onboard a DID', async () => {
@@ -27,6 +29,29 @@ describe('ESSIF Class', () => {
         it('should register a DID', async () => {
             let result = await ESSIF.registerDID(did);
             expect(result).toBe("Registered successfully.");
+        });
+    });
+
+    describe('Timestamps', () => {
+        it('should create a timestamp', async () => {
+
+        });
+        it('should get a timestamp by ID', async () => {
+            // https://api.preprod.ebsi.eu/timestamp/v2/timestamps
+            let timestampID = "uEiB42UpqwW7kwZS5aKxG2NGxz59C-cGhSSER7Phg40e7Cw";
+            let result = await ESSIF.getTimestampByID(timestampID);
+            expect(result).not.toBe("");
+            expect(typeof result.blockNumber).toBe('number');
+            expect(typeof result.transactionHash).toBe('string');
+        });
+        it('should get a timestamp by its transactionHash', async () => {
+            let timestampID = "uEiB42UpqwW7kwZS5aKxG2NGxz59C-cGhSSER7Phg40e7Cw";
+            let timestamp1 = await ESSIF.getTimestampByID(timestampID);
+            let timestamp2 = await ESSIF.getTimestampByTXHash(timestamp1.transactionHash);
+            expect(timestamp1).not.toBe("");
+            expect(timestamp2).not.toBe("");
+            expect(timestamp1.blockNumber).toBe(timestamp2.blockNumber);
+            expect(timestamp1.timestamp).toBe(timestamp2.timestamp);
         });
     });
 });

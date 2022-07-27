@@ -85,9 +85,9 @@ export class ESSIF {
         }
     }
 
-    static async getTimestampByID(timestampID: string): Promise<string> {
+    static async getTimestampByID(timestampID: string): Promise<any> {
         let response = await callAPI(
-            "POST",
+            "GET",
             apiPortESSIF,
             `/v1/client/timestamp/id/${timestampID}`,
         );
@@ -99,9 +99,9 @@ export class ESSIF {
         }
     }
 
-    static async getTimestampByTXHash(txHash: string): Promise<string> {
+    static async getTimestampByTXHash(txHash: string): Promise<any> {
         let response = await callAPI(
-            "POST",
+            "GET",
             apiPortESSIF,
             `/v1/client/timestamp/txhash/${txHash}`,
         );

@@ -5,7 +5,7 @@ import sha256 from "fast-sha256";
 import nacl from 'tweetnacl-util';
 
 // console.log errors in API Calls
-let debug = true;
+let debug = false;
 
 if (!debug) {
     console.log = function() {}
