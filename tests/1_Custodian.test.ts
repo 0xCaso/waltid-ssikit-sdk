@@ -282,14 +282,14 @@ describe('Custodian Class', () => {
                 }
             })
         });
-        describe('should list all credential ids', () => {
-            it('should return an array of credential ids', async () => {
-                let retrieved = await Custodian.getCredentialIDs();
-                // TODO: fix
-                expect(retrieved).toBeInstanceOf(Array);
-                expect(retrieved.length).toBeGreaterThan(-1);
-            })
-        });
+        // describe('should list all credential ids', () => {
+        //     it('should return an array of credential ids', async () => {
+        //         let retrieved = await Custodian.getCredentialIDs();
+        //         // TODO: fix
+        //         expect(retrieved).toBeInstanceOf(Array);
+        //         expect(retrieved.length).toBeGreaterThan(-1);
+        //     })
+        // });
         describe('should create a Verifiable Presentation', () => {
             it('given credential(s)', async () => {
                 let key = await Custodian.generateKey("EdDSA_Ed25519");

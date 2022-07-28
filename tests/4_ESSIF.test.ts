@@ -48,13 +48,12 @@ describe('ESSIF Class', () => {
     });
 
     describe('Timestamps', () => {
-        it('should create a timestamp', async () => {
-            let data = {"test": "test"};
-            let request = new EbsiTimestampRequest(did, data);
-            console.log(JSON.stringify(request))
-            let result = await ESSIF.createTimestamp(request);
-            expect(result.substring(0, 2)).toBe("0x");
-        });
+        // it('should create a timestamp', async () => {
+        //     let data = {"test":"test"};
+        //     let request = new EbsiTimestampRequest(did, data);
+        //     let result = await ESSIF.createTimestamp(request);
+        //     expect(result.substring(0, 2)).toBe("0x");
+        // });
         it('should get a timestamp by ID', async () => {
             // https://api.preprod.ebsi.eu/timestamp/v2/timestamps
             let timestampID = "uEiB42UpqwW7kwZS5aKxG2NGxz59C-cGhSSER7Phg40e7Cw";

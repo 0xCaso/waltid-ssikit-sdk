@@ -21,7 +21,7 @@ export interface ICustodian {
 
     getCredentials(): Promise<any>;
     getCredential(id: string): Promise<any>;
-    getCredentialIDs(): Promise<any>;
+    // getCredentialIDs(): Promise<any>;
     storeCredential(alias: string, credential: object): Promise<void>;
     deleteCredential(alias: string): Promise<void>;
     presentCredentials(request: PresentCredentialsRequest | PresentCredentialIDsRequest): Promise<any>;

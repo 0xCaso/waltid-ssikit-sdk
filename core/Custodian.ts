@@ -18,17 +18,17 @@ export class Custodian {
                                  HELPERS
     //////////////////////////////////////////////////////////////*/
 
-    static async printKeys(): Promise<void> {
-        let keys: Array<any> = await this.getKeys();
-        if (keys.length != 0) {
-            console.log("Keys found:\n");
-            for (let key of keys) {
-                console.log(key.keyId.id);
-            }
-        } else {
-            console.log("There are no saved keys yet.");
-        }
-    }
+    // static async printKeys(): Promise<void> {
+    //     let keys: Array<any> = await this.getKeys();
+    //     if (keys.length != 0) {
+    //         console.log("Keys found:\n");
+    //         for (let key of keys) {
+    //             console.log(key.keyId.id);
+    //         }
+    //     } else {
+    //         console.log("There are no saved keys yet.");
+    //     }
+    // }
     
     static async deleteAllKeys() {
         let keys = await this.getKeys();
@@ -301,18 +301,19 @@ export class Custodian {
         return result?.data;
     }
 
-    /**
-     * 
-     * @returns Array of Credential IDs the custodian knows of
-     */
-    static async getCredentialIDs(): Promise<any> {
-        let result = await callAPI(
-            "GET",
-            apiPortCustodian,
-            "/credentials/listCredentialIds"
-        );
-        return result?.data;
-    }
+    // TODO: this call is bugged, need to ask to walt.id team
+    // /**
+    //  * 
+    //  * @returns Array of Credential IDs the custodian knows of
+    //  */
+    // static async getCredentialIDs(): Promise<any> {
+    //     let result = await callAPI(
+    //         "GET",
+    //         apiPortCustodian,
+    //         "/credentials/listCredentialIds"
+    //     );
+    //     return result?.data;
+    // }
 
     /**
      * 

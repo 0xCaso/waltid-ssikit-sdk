@@ -66,24 +66,21 @@ export class ESSIF {
         }
     }
 
-    static async createTimestamp(request: EbsiTimestampRequest): Promise<string> {
-        let response = await callAPI(
-            "POST",
-            apiPortESSIF,
-            `/v1/client/timestamp`,
-            {
-                did: request.did,
-                ethDidAlias: request.ethDIDAlias,
-                data: request.data,
-            }
-        );
-        if (response.status === 200) {
-            return response?.data;
-        } else {
-            console.log("CreateTimestamp failed.");
-            return "";
-        }
-    }
+    // TODO: ask to walt.id team if createTimestamp call is not bugged
+    // static async createTimestamp(request: EbsiTimestampRequest): Promise<string> {
+    //     let response = await callAPI(
+    //         "POST",
+    //         apiPortESSIF,
+    //         `/v1/client/timestamp`,
+    //         request
+    //     );
+    //     if (response.status === 200) {
+    //         return response?.data;
+    //     } else {
+    //         console.log("CreateTimestamp failed.");
+    //         return "";
+    //     }
+    // }
 
     static async getTimestampByID(timestampID: string): Promise<any> {
         let response = await callAPI(

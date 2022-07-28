@@ -5,10 +5,11 @@ import sha256 from "fast-sha256";
 import nacl from 'tweetnacl-util';
 
 // console.log errors in API Calls
-export let debug = true;
+export let debug = false;
 
 if (!debug) {
     console.log = function() {}
+    console.error = function() {}
 }
 
 type Call = "GET" | "POST" | "DELETE" | "PUT";
@@ -236,7 +237,7 @@ export class PresentCredentialIDsRequest {
 
 export class EbsiTimestampRequest {
     public did: string;
-    public ethDIDAlias?: string;
+    public ethDidAlias?: string;
     public data: string;
 
     constructor(
@@ -245,7 +246,7 @@ export class EbsiTimestampRequest {
         ethDidAlias?: string,
     ) {
         this.did = did;
-        this.ethDIDAlias = ethDidAlias;
+        this.ethDidAlias = ethDidAlias;
         this.data = JSON.stringify(data);
     }
 }
@@ -258,7 +259,7 @@ export async function callAPI(
     type: Call,
     port: Port,
     url: string,
-    params?: object
+    params?: any
 ): 
     Promise<any> 
 {
