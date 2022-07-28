@@ -7,10 +7,6 @@ import {
 
 import { ICustodian } from '../interfaces/ICustodian';
 
-/**
- * @class Custodian
- * @description This class is used to manage keys and their associated
- */
 @staticImplements<ICustodian>()
 export class Custodian {
 

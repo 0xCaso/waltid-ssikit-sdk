@@ -2,7 +2,6 @@ import * as utils from './utils'
 
 import { Custodian } from './Custodian';
 import { Signatory } from './Signatory';
-import { Auditor } from './Auditor';
 
 /**
  * 

@@ -37,6 +37,11 @@ export class ESSIF {
         }
     }
 
+    /**
+     * 
+     * @param did the DID to auth
+     * @returns the result of the call
+     */
     static async auth(did: string): Promise<string> {
         let response = await callAPI(
             "POST",
@@ -51,6 +56,11 @@ export class ESSIF {
         }
     }
 
+    /**
+     * 
+     * @param did the DID to register in EBSI
+     * @returns the result of the call
+     */
     static async registerDID(did: string): Promise<string> {
         let response = await callAPI(
             "POST",
@@ -67,6 +77,11 @@ export class ESSIF {
     }
 
     // TODO: ask to walt.id team if createTimestamp call is not bugged
+    // /**
+    //  * 
+    //  * @param request the timestamp creation request object (refer to EbsiTimestampRequest)
+    //  * @returns the timestamp created
+    //  */
     // static async createTimestamp(request: EbsiTimestampRequest): Promise<string> {
     //     let response = await callAPI(
     //         "POST",
@@ -82,6 +97,11 @@ export class ESSIF {
     //     }
     // }
 
+    /**
+     * 
+     * @param timestampID the id of the timestamp to get
+     * @returns the timestamp object
+     */
     static async getTimestampByID(timestampID: string): Promise<any> {
         let response = await callAPI(
             "GET",
@@ -96,6 +116,11 @@ export class ESSIF {
         }
     }
 
+    /**
+     * 
+     * @param txHash the hash of the transaction associated to the timestamp
+     * @returns the timestamp object
+     */
     static async getTimestampByTXHash(txHash: string): Promise<any> {
         let response = await callAPI(
             "GET",

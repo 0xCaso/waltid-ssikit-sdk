@@ -5,7 +5,8 @@ import sha256 from "fast-sha256";
 import nacl from 'tweetnacl-util';
 
 // console.log errors in API Calls
-export let debug = false;
+export let debug = true;
+// export let debug = false;
 
 if (!debug) {
     console.log = function() {}
@@ -32,31 +33,31 @@ export type ProofType = "JWT" | "LD_PROOF"; // LD_PROOF is default, and human re
 export type CredentialStatusType = "SimpleCredentialStatus2022";
 export type PolicyEngineType = "OPA";
 export type VCTemplate =
-    "DataSelfDescription" |
-    "VerifiableDiploma" |
-    "VerifiableVaccinationCertificate" |
-    "LegalPerson" |
-    "VerifiableAuthorization" |
-    "Europass" |
-    "KybMonoCredential" |
-    "KycCredential" |
-    "VerifiableMandate" |
-    "VerifiablePresentation" |
-    "EuropeanBankIdentity" |
-    "KybCredential" |
-    "VerifiableAttestation" |
-    "OpenBadgeCredential" |
-    "PeerReview" |
-    "DataConsortium" |
-    "ProofOfResidence" |
-    "AmletCredential" |
-    "ParticipantCredential" |
-    "PermanentResidentCard" |
-    "UniversityDegree" |
-    "VerifiableId" |
-    "DataServiceOffering" |
-    "GaiaxCredential" |
-    "Iso27001Certificate"
+    | "DataSelfDescription"
+    | "VerifiableDiploma"
+    | "VerifiableVaccinationCertificate"
+    | "LegalPerson"
+    | "VerifiableAuthorization"
+    | "Europass"
+    | "KybMonoCredential"
+    | "KycCredential"
+    | "VerifiableMandate"
+    | "VerifiablePresentation"
+    | "EuropeanBankIdentity"
+    | "KybCredential"
+    | "VerifiableAttestation"
+    | "OpenBadgeCredential"
+    | "PeerReview"
+    | "DataConsortium"
+    | "ProofOfResidence"
+    | "AmletCredential"
+    | "ParticipantCredential"
+    | "PermanentResidentCard"
+    | "UniversityDegree"
+    | "VerifiableId"
+    | "DataServiceOffering"
+    | "GaiaxCredential"
+    | "Iso27001Certificate"
 ;
 
     /*//////////////////////////////////////////////////////////////
@@ -259,7 +260,7 @@ export async function callAPI(
     type: Call,
     port: Port,
     url: string,
-    params?: any
+    params?: object
 ): 
     Promise<any> 
 {
