@@ -4,10 +4,10 @@ import { base32 } from "rfc4648";
 import sha256 from "fast-sha256";
 import nacl from 'tweetnacl-util';
 
-// console.log errors in API Calls
+/**
+ * Turn on/off the debug mode for the tests
+ */
 export let debug = true;
-// export let debug = false;
-
 if (!debug) {
     console.log = function() {}
     console.error = function() {}
@@ -28,7 +28,7 @@ export const apiPortESSIF: Port = 7004;
 
 export type KeyAlgorithm = "RSA" | "EdDSA_Ed25519" | "ECDSA_Secp256k1";
 export type KeyFormat = "JWK" | "PEM";
-export type DIDMethod = "key" | "did" | "ebsi";
+export type DIDMethod = "key" | "web" | "ebsi";
 export type ProofType = "JWT" | "LD_PROOF"; // LD_PROOF is default, and human readable
 export type CredentialStatusType = "SimpleCredentialStatus2022";
 export type PolicyEngineType = "OPA";

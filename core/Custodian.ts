@@ -297,7 +297,7 @@ export class Custodian {
         return result?.data;
     }
 
-    // TODO: this call is bugged, need to ask to walt.id team
+    // TODO: de-comment when bug is resolved by walt-id
     // /**
     //  * 
     //  * @returns Array of Credential IDs the custodian knows of
