@@ -14,7 +14,7 @@
     "uuid": "^8.3.2"
   },
   "scripts": {
-    "test": "sudo ./runTests.sh",
+    "test": "sudo ./tests/runTests.sh",
     "clear": "cd .. && cd waltid-ssikit && sudo rm -r data/credential-store"
   }
 }

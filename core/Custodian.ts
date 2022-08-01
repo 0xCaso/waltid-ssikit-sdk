@@ -13,18 +13,6 @@ export class Custodian {
     /*//////////////////////////////////////////////////////////////
                                  HELPERS
     //////////////////////////////////////////////////////////////*/
-
-    // static async printKeys(): Promise<void> {
-    //     let keys: Array<any> = await this.getKeys();
-    //     if (keys.length != 0) {
-    //         console.log("Keys found:\n");
-    //         for (let key of keys) {
-    //             console.log(key.keyId.id);
-    //         }
-    //     } else {
-    //         console.log("There are no saved keys yet.");
-    //     }
-    // }
     
     static async deleteAllKeys() {
         let keys = await this.getKeys();
@@ -104,23 +92,27 @@ export class Custodian {
      * 
      * @param key Key object or KeyID string
      */
-    static async deleteKey(key: any) {
+    static async deleteKey(key: any): Promise<string> {
         let keyId = this.checkIfStringOrObject(key, "key");
         if (keyId) {
-            await callAPI(
+            let result = await callAPI(
                 "DELETE",
                 apiPortCustodian,
                 `/keys/${keyId}`,
             );
+            if (result.status === "success") {
+                return "Key deleted successfully.";
+            }
         }
+        return "Key deletion failed.";
     }
 
     /**
      * 
      * @param key Key object or KeyID string
      * @param format The format you want to export the key to. Admitted values: JWK, PEM
-     * @param exportPrivate 
-     * @returns 
+     * @param exportPrivate if true, exports the private key (otherwise the public)
+     * @returns the exported key
      */
     static async exportKey(
         key: any, 
@@ -171,7 +163,7 @@ export class Custodian {
      * 
      * @returns Array of DID strings
      */
-    static async getDIDs(): Promise<any> {
+    static async getDIDs(): Promise<Array<string>> {
         let result = await callAPI(
             "GET",
             apiPortCustodian,
@@ -228,14 +220,19 @@ export class Custodian {
     /**
      * 
      * @param did DID id string or object
+     * @returns DID deletion result
      */ 
-    static async deleteDID(did: any) {
+    static async deleteDID(did: any): Promise<string> {
         let didId = this.checkIfStringOrObject(did, "did");
-        await callAPI(
+        let result = await callAPI(
             "DELETE",
             apiPortCustodian,
             `/did/${didId}`
         );
+        if (result.status === "success") {
+            return "DID deleted successfully.";
+        }
+        return "DID deletion failed.";
     }
 
     /**
@@ -255,15 +252,20 @@ export class Custodian {
 
     /**
      * 
-     * @param did to resolve and import to the underlying data store 
+     * @param did to resolve and import to the underlying data store
+     * @returns DID import result
      */
-    static async importDID(did: string) {
-        await callAPI(
+    static async importDID(did: string): Promise<string> {
+        let result = await callAPI(
             "POST",
             apiPortCustodian,
             "/did/import",
             JSON.parse(JSON.stringify(did))
         )
+        if (result.status === "success") {
+            return "DID imported successfully.";
+        }
+        return "DID import failed.";
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -274,7 +276,7 @@ export class Custodian {
      * 
      * @returns Array of Credential objects the custodian knows of
      */
-    static async getCredentials(): Promise<any> {
+    static async getCredentials(): Promise<Array<any>> {
         let result = await callAPI(
             "GET",
             apiPortCustodian,
@@ -288,16 +290,16 @@ export class Custodian {
      * @param id Credential id string
      * @returns Credential object
      */
-    static async getCredential(id: string): Promise<any> {
+    static async getCredential(alias: string): Promise<any> {
         let result = await callAPI(
             "GET",
             apiPortCustodian,
-            `/credentials/${id}`
+            `/credentials/${alias}`
         );
         return result?.data;
     }
 
-    // TODO: de-comment when bug is resolved by walt-id
+    // TODO: de-comment when bug is resolved by walt.id
     // /**
     //  * 
     //  * @returns Array of Credential IDs the custodian knows of
@@ -316,13 +318,17 @@ export class Custodian {
      * @param alias Credential alias string (example: "MyPassport")
      * @param credential Credential object to store
      */
-    static async storeCredential(alias: string, credential: object): Promise<void> {
-        await callAPI(
+    static async storeCredential(alias: string, credential: object): Promise<string> {
+        let result = await callAPI(
             "PUT",
             apiPortCustodian,
             `/credentials/${alias}`,
             credential
         );
+        if (result.status === "success") {
+            return "Credential stored successfully.";
+        }
+        return "Credential storage failed.";
     }
 
     /**
