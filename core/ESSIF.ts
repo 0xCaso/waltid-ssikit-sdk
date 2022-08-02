@@ -30,11 +30,9 @@ export class ESSIF {
                 did: did,
             }
         );
-        if (response.status === 200) {
-            return JSON.parse(response?.data);
-        } else {
-            return "Onboard failed.";
-        }
+        return response.status === 200 
+            ? JSON.parse(response?.data) 
+            : false;
     }
 
     /**
@@ -42,18 +40,14 @@ export class ESSIF {
      * @param did the DID to auth
      * @returns the result of the call
      */
-    static async auth(did: string): Promise<string> {
+    static async auth(did: string): Promise<boolean> {
         let response = await callAPI(
             "POST",
             apiPortESSIF,
             `/v1/client/auth`,
             JSON.parse(JSON.stringify(did))
         );
-        if (response.status === 200) {
-            return "Authenticated successfully.";
-        } else {
-            return "Auth failed.";
-        }
+        return response.status === 200 ? true : false;
     }
 
     /**
@@ -61,19 +55,14 @@ export class ESSIF {
      * @param did the DID to register in EBSI
      * @returns the result of the call
      */
-    static async registerDID(did: string): Promise<string> {
+    static async registerDID(did: string): Promise<boolean> {
         let response = await callAPI(
             "POST",
             apiPortESSIF,
             `/v1/client/registerDid`,
             JSON.parse(JSON.stringify(did))
         );
-        if (response.status === 200) {
-            return "Registered successfully.";
-        } else {
-            console.log("RegisterDID failed.");
-            return "RegisterDID failed.";
-        }
+        return response.status === 200 ? true : false;
     }
 
     // TODO: ask to walt.id team if createTimestamp call is not bugged
@@ -108,17 +97,12 @@ export class ESSIF {
             apiPortESSIF,
             `/v1/client/timestamp/id/${timestampID}`,
         );
-        if (response.status === 200) {
-            return response?.data;
-        } else {
-            console.log("GetTimestampByID failed.");
-            return "";
-        }
+        return response.status === 200 ? response?.data : "";
     }
 
     /**
      * 
-     * @param txHash the hash of the transaction associated to the timestamp
+     * @param txHash the hash of the transaction associated with the timestamp
      * @returns the timestamp object
      */
     static async getTimestampByTXHash(txHash: string): Promise<any> {
@@ -127,12 +111,7 @@ export class ESSIF {
             apiPortESSIF,
             `/v1/client/timestamp/txhash/${txHash}`,
         );
-        if (response.status === 200) {
-            return response?.data;
-        } else {
-            console.log("GetTimestampByTXHash failed.");
-            return "";
-        }
+        return response.status === 200 ? response?.data : "";
     }
     
 }

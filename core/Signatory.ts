@@ -15,7 +15,7 @@ export class Signatory {
 
     /**
      * 
-     * @param request is the object containing the request data (refer to IssueCredentialRequest)
+     * @param request is the object containing the requested data (refer to IssueCredentialRequest)
      * @returns a W3C Verifiable Credential
      */
     static async issueCredential(request: IssueCredentialRequest): Promise<any> {
@@ -34,9 +34,9 @@ export class Signatory {
 
     /**
      * 
-     * @returns a list of templates ids, which can be used by walt.id Signatory API
+     * @returns a list of template ids, which can be used by walt.id Signatory API
      */
-    static async getVCTemplates(): Promise<any> {
+    static async getVCTemplates(): Promise<Array<VCTemplate>> {
         let result = await callAPI(
             "GET", 
             apiPortSignatory,
@@ -71,7 +71,7 @@ export class Signatory {
 
     /**
      * 
-     * @param publicRevocationToken is VC's public revocation token, used to check the status of the revocation
+     * @param publicRevocationToken VC's public revocation token, used to check the status of the revocation
      * @returns revocation result: object = { token: string, revoked: boolean, timeOfRevocation: integer }
      */
     static async isRevoked(publicRevocationToken: string): Promise<any> {
@@ -86,12 +86,14 @@ export class Signatory {
     /**
      * 
      * @param privateRevocationToken is VC's token for the revoke
+     * @returns credential revocation result
      */
-    static async revokeCredential(privateRevocationToken: string): Promise<void> {
-        await callAPI(
+    static async revokeCredential(privateRevocationToken: string): Promise<boolean> {
+        let result = await callAPI(
             "POST", 
             apiPortSignatory,
             `/v1/revocations/${privateRevocationToken}`
         );
+        return result.status === 200 ? true : false;
     }
 }

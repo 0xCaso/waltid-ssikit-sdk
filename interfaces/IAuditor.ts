@@ -4,7 +4,7 @@ import {
 
 export interface IAuditor {
     
-    getVerificationPolicies(): Promise<any>;
+    getVerificationPolicies(): Promise<Array<any>>;
     verifyCredential(request: VerificationRequest): Promise<any>;
     
     createDynamicVerificationPolicy(
@@ -12,8 +12,8 @@ export interface IAuditor {
         arg: DynamicPolicyArg,
         update?: boolean, 
         downloadPolicy?: boolean
-    ): Promise<DynamicPolicyArg>;
+    ): Promise<boolean>;
 
-    deleteDynamicVerificationPolicy(name: string): Promise<void>; 
+    deleteDynamicVerificationPolicy(name: string): Promise<boolean>; 
 
 }

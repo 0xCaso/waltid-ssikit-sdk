@@ -16,7 +16,7 @@ export class Auditor {
      * 
      * @returns an array of VerificationPolicy JSON objects { applyToVC, applyToVP, id, description }
      */
-    static async getVerificationPolicies(): Promise<any> {
+    static async getVerificationPolicies(): Promise<Array<any>> {
         let result = await callAPI(
             "GET", 
             apiPortAuditor,
@@ -28,7 +28,7 @@ export class Auditor {
     /**
      * 
      * @param request is the object containing the request data (refer to VerificationRequest type)
-     * @returns an array of VerificationResponse objects { valid, results }
+     * @returns a VerificationResponse JSON object { valid, results }
      */
     static async verifyCredential(request: VerificationRequest): Promise<any> {
         let result = await callAPI(
@@ -46,7 +46,7 @@ export class Auditor {
      * @param arg is the argument of the policy (refer to DynamicPolicyArg)
      * @param update is a boolean indicating if the policy can be updated
      * @param downloadPolicy is a boolean indicating if the policy can be downloaded
-     * @returns a DynamicPolicyArg object
+     * @returns the policy creation result
      */
     static async createDynamicVerificationPolicy(
         name: string,
@@ -54,7 +54,7 @@ export class Auditor {
         update?: boolean,
         downloadPolicy?: boolean
     ): 
-        Promise<DynamicPolicyArg> 
+        Promise<boolean> 
     {
         let path = `/v1/create/${name}`;
         if (update !== undefined) {
@@ -74,23 +74,25 @@ export class Auditor {
             path,
             arg
         );
-        return result?.data;
+        return result.status === 200 ? true : false;
     }
 
     /**
      * 
      * @param name is the name of the policy to delete
+     * @returns the policy deletion result
      */
     static async deleteDynamicVerificationPolicy(
         name: string
     ): 
-        Promise<void> 
+        Promise<boolean> 
     {
-        await callAPI(
+        let result = await callAPI(
             "DELETE",
             apiPortAuditor,
             `/v1/delete/${name}`
         );
+        return result.status === 200 ? true : false;
     }
 
 }

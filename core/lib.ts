@@ -2,6 +2,7 @@ import * as utils from './utils'
 
 import { Custodian } from './Custodian';
 import { Signatory } from './Signatory';
+import { ESSIF } from './ESSIF';
 
 /**
  * 
@@ -31,4 +32,24 @@ export async function issueRandomVC(proofType: utils.ProofType, subjectDID?: str
     let credential = await Signatory.issueCredential(request);
     console.log(JSON.stringify(credential))
     return [credential, baseToken];
+}
+
+/**
+ * 
+ * @param bearerToken the token to use for EBSI interaction
+ * @param did the DID to register
+ * @returns DID registration result
+ */
+export async function registerDIDOnEBSI(bearerToken: string, did: string) {
+    let onboard = await ESSIF.onboard(bearerToken, did);
+    if (onboard) {
+        let auth = await ESSIF.auth(did);
+        if (auth) {
+            let register = await ESSIF.registerDID(did);
+            if (register) {
+                console.log("DID registered successfully");
+            }
+        }
+    }
+    console.log("DID registration failed");
 }

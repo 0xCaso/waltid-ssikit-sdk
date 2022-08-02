@@ -39,11 +39,11 @@ describe('ESSIF Class', () => {
         });
         it('should auth a DID', async () => {
             let result = await ESSIF.auth(did);
-            expect(result).toBe("Authenticated successfully.");
+            expect(result).toBe(true);
         });
         it('should register a DID', async () => {
             let result = await ESSIF.registerDID(did);
-            expect(result).toBe("Registered successfully.");
+            expect(result).toBe(true);
         });
     });
 

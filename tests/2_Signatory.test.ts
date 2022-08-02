@@ -31,7 +31,6 @@ describe('Signatory Class', () => {
         it('should issue a credential', async () => {
             let proofType: ProofType = "LD_PROOF";
             let credential = await issueRandomVC(proofType);
-            console.log(JSON.stringify(credential));
             if (proofType !== "LD_PROOF") {
                 expect(typeof credential).toBe("string")
             } else {

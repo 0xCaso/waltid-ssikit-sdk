@@ -50,7 +50,7 @@ export class Custodian {
      * 
      * @returns Array of Key objects
      */
-    static async getKeys(): Promise<any> {
+    static async getKeys(): Promise<Array<any>> {
         let result = await callAPI(
             "GET",
             apiPortCustodian,
@@ -91,8 +91,9 @@ export class Custodian {
     /**
      * 
      * @param key Key object or KeyID string
+     * @returns Key deletion result
      */
-    static async deleteKey(key: any): Promise<string> {
+    static async deleteKey(key: any): Promise<boolean> {
         let keyId = this.checkIfStringOrObject(key, "key");
         if (keyId) {
             let result = await callAPI(
@@ -100,11 +101,9 @@ export class Custodian {
                 apiPortCustodian,
                 `/keys/${keyId}`,
             );
-            if (result.status === "success") {
-                return "Key deleted successfully.";
-            }
+            return result.status === 200 ? true : false;
         }
-        return "Key deletion failed.";
+        return false;
     }
 
     /**
@@ -222,17 +221,14 @@ export class Custodian {
      * @param did DID id string or object
      * @returns DID deletion result
      */ 
-    static async deleteDID(did: any): Promise<string> {
+    static async deleteDID(did: any): Promise<boolean> {
         let didId = this.checkIfStringOrObject(did, "did");
         let result = await callAPI(
             "DELETE",
             apiPortCustodian,
             `/did/${didId}`
         );
-        if (result.status === "success") {
-            return "DID deleted successfully.";
-        }
-        return "DID deletion failed.";
+        return result.status === 200 ? true : false;
     }
 
     /**
@@ -255,17 +251,14 @@ export class Custodian {
      * @param did to resolve and import to the underlying data store
      * @returns DID import result
      */
-    static async importDID(did: string): Promise<string> {
+    static async importDID(did: string): Promise<boolean> {
         let result = await callAPI(
             "POST",
             apiPortCustodian,
             "/did/import",
             JSON.parse(JSON.stringify(did))
         )
-        if (result.status === "success") {
-            return "DID imported successfully.";
-        }
-        return "DID import failed.";
+        return result.status === 200 ? true : false;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -317,36 +310,36 @@ export class Custodian {
      * 
      * @param alias Credential alias string (example: "MyPassport")
      * @param credential Credential object to store
+     * @returns Credential storage result
      */
-    static async storeCredential(alias: string, credential: object): Promise<string> {
+    static async storeCredential(alias: string, credential: object): Promise<boolean> {
         let result = await callAPI(
             "PUT",
             apiPortCustodian,
             `/credentials/${alias}`,
             credential
         );
-        if (result.status === "success") {
-            return "Credential stored successfully.";
-        }
-        return "Credential storage failed.";
+        return result.status === 200 ? true : false;
     }
 
     /**
      * 
      * @param alias Credential's alias to delete
+     * @returns Credential deletion result
      */
-    static async deleteCredential(alias: string): Promise<void> {
-        await callAPI(
+    static async deleteCredential(alias: string): Promise<boolean> {
+        let result = await callAPI(
             "DELETE",
             apiPortCustodian,
             `/credentials/${alias}`
         );
+        return result.status === 200 ? true : false;
     }
 
     /**
      * 
-     * @param request the request object (refer to PresentCredentialRequest)
-     * @returns a Verificable Presentation object
+     * @param request the request object (refer to the two classes)
+     * @returns a Verifiable Presentation object
      */
     static async presentCredentials(
         request: PresentCredentialsRequest | PresentCredentialIDsRequest

@@ -4,8 +4,8 @@ import {
 export interface IESSIF {
 
     onboard(bearerToken: string, did: string): Promise<any>;
-    auth(did: string): Promise<string>;
-    registerDID(did: string): Promise<string>;
+    auth(did: string): Promise<boolean>;
+    registerDID(did: string): Promise<boolean>;
     // createTimestamp(request: EbsiTimestampRequest): Promise<string>;
     
     getTimestampByID(timestampID: string): Promise<any>;

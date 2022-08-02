@@ -5,6 +5,11 @@ import sha256 from "fast-sha256";
 import nacl from 'tweetnacl-util';
 
 /**
+ * if true, it will use the API service hosted by walt.id
+ * otherwise, the calls will be made to localhost
+ */
+export let demo = false;
+/**
  * Turn on/off the debug mode for the tests
  */
 export let debug = true;
@@ -266,18 +271,33 @@ export async function callAPI(
 {
     let result
     let config = params;
+    let callingUrl = `http://localhost:${port}${url}`;
+    if (demo) {
+        let prefix = "";
+        if (port === apiPortCore)
+            prefix = "core";
+        else if (port === apiPortSignatory)
+            prefix = "signatory";
+        else if (port === apiPortCustodian)
+            prefix = "custodian";
+        else if (port === apiPortAuditor)
+            prefix = "auditor";
+        else if (port === apiPortESSIF)
+            prefix = "essif";
+        callingUrl = `https://${prefix}.ssikit.walt-test.cloud${url}`;
+    }
     try {
         if (type === "GET") {
-            result = await axios.get(`http://0.0.0.0:${port}${url}`, config);
+            result = await axios.get(callingUrl, config);
         } else 
         if (type === "POST") {
-            result = await axios.post(`http://0.0.0.0:${port}${url}`, config);
+            result = await axios.post(callingUrl, config);
         } else 
         if (type === "DELETE") {
-            result = await axios.delete(`http://0.0.0.0:${port}${url}`, config);
+            result = await axios.delete(callingUrl, config);
         } else
         if (type === "PUT") {
-            result = await axios.put(`http://0.0.0.0:${port}${url}`, config);
+            result = await axios.put(callingUrl, config);
         }
         return result
     } catch(err: any) {
