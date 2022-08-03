@@ -1,6 +1,7 @@
 import { 
     callAPI, apiPortESSIF,
     staticImplements, EbsiTimestampRequest,
+    getId,
 } from './utils';
 
 import { IESSIF } from '../interfaces/IESSIF';
@@ -17,17 +18,18 @@ export class ESSIF {
     /**
      * 
      * @param bearerToken the token to use for EBSI interaction
-     * @param did the DID to onboard
+     * @param did the DID (string or object) to onboard
      * @returns the VC of the onboarding, or an error message
      */
-    static async onboard(bearerToken: string, did: string): Promise<any> {
+    static async onboard(bearerToken: string, did: any): Promise<any> {
+        let didId = getId(did, "did");
         let response = await callAPI(
             "POST",
             apiPortESSIF,
             `/v1/client/onboard`,
             {
                 bearerToken: bearerToken,
-                did: did,
+                did: didId,
             }
         );
         return response.status === 200 
@@ -37,15 +39,16 @@ export class ESSIF {
 
     /**
      * 
-     * @param did the DID to auth
+     * @param did the DID (string or object) to auth
      * @returns the result of the call
      */
-    static async auth(did: string): Promise<boolean> {
+    static async auth(did: any): Promise<boolean> {
+        let didId = getId(did, "did");
         let response = await callAPI(
             "POST",
             apiPortESSIF,
             `/v1/client/auth`,
-            JSON.parse(JSON.stringify(did))
+            JSON.parse(JSON.stringify(didId))
         );
         return response.status === 200 ? true : false;
     }
@@ -55,12 +58,13 @@ export class ESSIF {
      * @param did the DID to register in EBSI
      * @returns the result of the call
      */
-    static async registerDID(did: string): Promise<boolean> {
+    static async registerDID(did: any): Promise<boolean> {
+        let didId = getId(did, "did");
         let response = await callAPI(
             "POST",
             apiPortESSIF,
             `/v1/client/registerDid`,
-            JSON.parse(JSON.stringify(did))
+            JSON.parse(JSON.stringify(didId))
         );
         return response.status === 200 ? true : false;
     }

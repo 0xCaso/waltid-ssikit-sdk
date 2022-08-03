@@ -19,13 +19,14 @@ if (!debug) {
 }
 
 type Call = "GET" | "POST" | "DELETE" | "PUT";
-type Port = 7000 | 7001 | 7002 | 7003 | 7004;
+type Port = 7000 | 7001 | 7002 | 7003 | 7004 | 8080;
 
 export const apiPortCore: Port = 7000;
 export const apiPortSignatory: Port = 7001;
 export const apiPortCustodian: Port = 7002;
 export const apiPortAuditor: Port = 7003;
 export const apiPortESSIF: Port = 7004;
+export const apiPortUniversalResolver: Port = 8080;
 
     /*//////////////////////////////////////////////////////////////
                                   TYPES
@@ -304,6 +305,20 @@ export async function callAPI(
         console.error(err.response.data);
         return ""
     }
+}
+
+export function getId(param: any, type: string): string {
+    let id: string = "";
+    if (typeof param === "string") {
+        id = param;
+    } else {
+        if (type === "key") {
+            id = param?.keyId?.id;
+        } else if (type === "did") {
+            id = param?.id;
+        }
+    }
+    return id;
 }
 
 export function getRandomUUID(): string {

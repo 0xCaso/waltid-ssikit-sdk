@@ -1,5 +1,8 @@
 import { Custodian } from '../core/Custodian';
-import { PresentCredentialsRequest, PresentCredentialIDsRequest } from '../core/utils';
+import { 
+    PresentCredentialsRequest, PresentCredentialIDsRequest,
+    getId,
+} from '../core/utils';
 import { issueRandomVC } from '../core/lib'
 
 describe('Custodian Class', () => {
@@ -18,7 +21,8 @@ describe('Custodian Class', () => {
             it('should generate a key', async () => {
                 let key = await Custodian.generateKey("RSA");
                 expect(key).toBeInstanceOf(Object);
-                expect(typeof key.keyId.id).toBe('string');
+                let keyId = getId(key, "key");
+                expect(keyId).not.toBe("");
             })
         })
         describe('getKeys', () => {
@@ -28,17 +32,20 @@ describe('Custodian Class', () => {
                     await Custodian.generateKey("RSA");
                 }
                 let keys = await Custodian.getKeys();
+                let keyId = getId(keys[0], "key");
                 expect(keys).toBeInstanceOf(Array);
                 expect(keys.length).toBe(5);
-                expect(typeof keys[0].keyId.id).toBe('string');
+                expect(keyId).not.toBe("");
             });
         }),
         describe('getKey', () => {
             it('should return a key', async () => {
                 let key = await Custodian.generateKey("RSA");
-                key = await Custodian.getKey(key.keyId.id);
+                let keyId = getId(key, "key");
+                key = await Custodian.getKey(keyId);
+                let retrievedKeyId = getId(key, "key");
                 expect(key).toBeInstanceOf(Object);
-                expect(typeof key.keyId.id).toBe('string');
+                expect(retrievedKeyId).not.toBe("");
             });
             it('should throw an error if the key does not exist', async () => {
                 try {

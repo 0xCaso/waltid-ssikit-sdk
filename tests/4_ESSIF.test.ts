@@ -1,7 +1,9 @@
 import { ESSIF } from '../core/ESSIF';
 import { Custodian } from '../core/Custodian';
 import fs from 'fs';
-import { EbsiTimestampRequest } from '../core/utils';
+import { 
+    EbsiTimestampRequest, getId,
+} from '../core/utils';
 
 jest.setTimeout(50000);
 
@@ -29,7 +31,7 @@ describe('ESSIF Class', () => {
         it('should onboard a DID', async () => {
             // algo must be "ECDSA_SECP256K1" in order to sign txs on ETH
             key = await Custodian.generateKey("ECDSA_Secp256k1");
-            // console.log(`Generated key: ${key.keyId.id}`);
+            // console.log(`Generated key: ${getId(key, "key")}`);
             did = await Custodian.createDID("ebsi", key);
             console.log(`Generated DID: ${did}`);
             let VC = await ESSIF.onboard(bearerToken, did);

@@ -8,15 +8,15 @@ export interface ICustodian {
     getKeys(): Promise<Array<any>>;
     getKey(keyId: string): Promise<any>;
     generateKey(algorithm: KeyAlgorithm): Promise<any>;
-    deleteKey(keyId: string): Promise<boolean>;
+    deleteKey(key: any): Promise<boolean>;
     exportKey(key: any, format: KeyFormat, exportPrivate: boolean): Promise<any> 
     importKey(formattedKey: object): Promise<any>;
 
     getDIDs(): Promise<Array<string>>;
     getDID(did: string): Promise<any>;
-    createDID(method: DIDMethod, keyId: string, didWebDomain?: string, didWebPath?: string): Promise<string> 
-    deleteDID(did: string): Promise<boolean>;
-    resolveDID(did: string): Promise<string>;
+    createDID(method: DIDMethod, key: any, didWebDomain?: string, didWebPath?: string): Promise<string> 
+    deleteDID(did: any): Promise<boolean>;
+    resolveDID(did: string): Promise<any>;
     importDID(did: string): Promise<boolean>;
 
     getCredentials(): Promise<Array<any>>;

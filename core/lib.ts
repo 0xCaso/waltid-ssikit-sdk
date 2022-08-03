@@ -48,6 +48,8 @@ export async function registerDIDOnEBSI(bearerToken: string, did: string) {
             let register = await ESSIF.registerDID(did);
             if (register) {
                 console.log("DID registered successfully");
+                let resolved = Custodian.resolveDID(did)
+                console.log(JSON.stringify(resolved))
             }
         }
     }

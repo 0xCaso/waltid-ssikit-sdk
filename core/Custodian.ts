@@ -2,7 +2,7 @@ import {
     callAPI, apiPortCustodian, 
     KeyAlgorithm, KeyFormat, DIDMethod,
     PresentCredentialsRequest, PresentCredentialIDsRequest,
-    staticImplements,
+    staticImplements, getId,
 } from './utils';
 
 import { ICustodian } from '../interfaces/ICustodian';
@@ -26,20 +26,6 @@ export class Custodian {
         for (let did of dids) {
             await this.deleteDID(did);
         }
-    }
-
-    private static checkIfStringOrObject(param: any, type: string): string {
-        let id: string = "";
-        if (typeof param === "string") {
-            id = param;
-        } else {
-            if (type === "key") {
-                id = param?.keyId?.id;
-            } else if (type === "did") {
-                id = param?.id;
-            }
-        }
-        return id;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -94,7 +80,7 @@ export class Custodian {
      * @returns Key deletion result
      */
     static async deleteKey(key: any): Promise<boolean> {
-        let keyId = this.checkIfStringOrObject(key, "key");
+        let keyId = getId(key, "key");
         if (keyId) {
             let result = await callAPI(
                 "DELETE",
@@ -120,7 +106,7 @@ export class Custodian {
     ): 
         Promise<any> 
     {
-        let keyId = this.checkIfStringOrObject(key, "key");
+        let keyId = getId(key, "key");
         if (keyId) {
             let key = await this.getKey(keyId);
             if (key) {
@@ -201,7 +187,7 @@ export class Custodian {
     ): 
         Promise<string> 
     {
-        let keyId = this.checkIfStringOrObject(key, "key");
+        let keyId = getId(key, "key");
         let result = await callAPI(
             "POST",
             apiPortCustodian,
@@ -222,7 +208,7 @@ export class Custodian {
      * @returns DID deletion result
      */ 
     static async deleteDID(did: any): Promise<boolean> {
-        let didId = this.checkIfStringOrObject(did, "did");
+        let didId = getId(did, "did");
         let result = await callAPI(
             "DELETE",
             apiPortCustodian,
@@ -280,7 +266,7 @@ export class Custodian {
 
     /**
      * 
-     * @param id Credential id string
+     * @param alias Credential id string
      * @returns Credential object
      */
     static async getCredential(alias: string): Promise<any> {
