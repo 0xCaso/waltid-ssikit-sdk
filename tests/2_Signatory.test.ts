@@ -10,13 +10,13 @@ describe('Signatory Class', () => {
 
     describe('Verifiable Credentials', () => {
         it('should retrieve VC supported templates', async () => {
-            let templates = await Signatory.getVCTemplates();
+            let templates = await Signatory.getVCTemplateIDs();
             expect(templates).toBeInstanceOf(Array);
             expect(templates.length).toBeGreaterThan(0);
             expect(typeof templates[0]).toBe('string');
         });
         it('should retrieve a VC template', async () => {
-            let templates = await Signatory.getVCTemplates();
+            let templates = await Signatory.getVCTemplateIDs();
             let template = await Signatory.getVCTemplate(templates[0]);
             expect(template).toBeInstanceOf(Object);
             expect(typeof template.id).toBe('string');

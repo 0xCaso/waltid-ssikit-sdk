@@ -38,33 +38,6 @@ export type DIDMethod = "key" | "web" | "ebsi";
 export type ProofType = "JWT" | "LD_PROOF"; // LD_PROOF is default
 export type CredentialStatusType = "SimpleCredentialStatus2022";
 export type PolicyEngineType = "OPA";
-export type VCTemplate =
-    | "DataSelfDescription"
-    | "VerifiableDiploma"
-    | "VerifiableVaccinationCertificate"
-    | "LegalPerson"
-    | "VerifiableAuthorization"
-    | "Europass"
-    | "KybMonoCredential"
-    | "KycCredential"
-    | "VerifiableMandate"
-    | "VerifiablePresentation"
-    | "EuropeanBankIdentity"
-    | "KybCredential"
-    | "VerifiableAttestation"
-    | "OpenBadgeCredential"
-    | "PeerReview"
-    | "DataConsortium"
-    | "ProofOfResidence"
-    | "AmletCredential"
-    | "ParticipantCredential"
-    | "PermanentResidentCard"
-    | "UniversityDegree"
-    | "VerifiableId"
-    | "DataServiceOffering"
-    | "GaiaxCredential"
-    | "Iso27001Certificate"
-;
 
     /*//////////////////////////////////////////////////////////////
                                  CLASSES

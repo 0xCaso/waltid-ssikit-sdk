@@ -1,6 +1,6 @@
 import { 
     callAPI, apiPortSignatory,
-    VCTemplate, IssueCredentialRequest,
+    IssueCredentialRequest,
     staticImplements,
 } from './utils';
 
@@ -36,7 +36,7 @@ export class Signatory {
      * 
      * @returns a list of template ids, which can be used by walt.id Signatory API
      */
-    static async getVCTemplates(): Promise<Array<VCTemplate>> {
+    static async getVCTemplateIDs(): Promise<Array<string>> {
         let result = await callAPI(
             "GET", 
             apiPortSignatory,
@@ -50,7 +50,7 @@ export class Signatory {
      * @param templateId is a template id, which can be used by walt.id Signatory API
      * @returns the template object
      */
-    static async getVCTemplate(templateId: VCTemplate): Promise<any> {
+    static async getVCTemplate(templateId: string): Promise<any> {
         let result = await callAPI(
             "GET", 
             apiPortSignatory,
