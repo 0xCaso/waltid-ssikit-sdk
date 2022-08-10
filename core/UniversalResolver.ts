@@ -17,7 +17,7 @@ export class UniversalResolver {
      * @param did the DID to resolve
      * @returns the resolved DID (with all metadata)
      */
-    static async resolveDID(did: string) {
+    static async resolveDID(did: string): Promise<any> {
         let result = await callAPI(
             "GET", 
             apiPortUniversalResolver,

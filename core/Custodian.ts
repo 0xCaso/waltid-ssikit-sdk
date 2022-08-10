@@ -278,19 +278,18 @@ export class Custodian {
         return result?.data;
     }
 
-    // TODO: de-comment when bug is resolved by walt.id
-    // /**
-    //  * 
-    //  * @returns Array of Credential IDs the custodian knows of
-    //  */
-    // static async getCredentialIDs(): Promise<any> {
-    //     let result = await callAPI(
-    //         "GET",
-    //         apiPortCustodian,
-    //         "/credentials/listCredentialIds"
-    //     );
-    //     return result?.data;
-    // }
+    /**
+     * 
+     * @returns Array of Credential IDs the custodian knows of
+     */
+    static async getCredentialIDs(): Promise<Array<any>> {
+        let result = await callAPI(
+            "GET",
+            apiPortCustodian,
+            "/credentials/list/credentialIds"
+        );
+        return result?.data?.list;
+    }
 
     /**
      * 

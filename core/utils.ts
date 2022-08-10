@@ -35,7 +35,7 @@ export const apiPortUniversalResolver: Port = 8080;
 export type KeyAlgorithm = "RSA" | "EdDSA_Ed25519" | "ECDSA_Secp256k1";
 export type KeyFormat = "JWK" | "PEM";
 export type DIDMethod = "key" | "web" | "ebsi";
-export type ProofType = "JWT" | "LD_PROOF"; // LD_PROOF is default, and human readable
+export type ProofType = "JWT" | "LD_PROOF"; // LD_PROOF is default
 export type CredentialStatusType = "SimpleCredentialStatus2022";
 export type PolicyEngineType = "OPA";
 export type VCTemplate =
@@ -125,7 +125,6 @@ export class ProofConfig {
 // - templateId
 // - issuerDID (inside config)
 // - subjectDID (inside config)
-// - proofType (inside config)
 export class IssueCredentialRequest {
     public templateId: string;
     public config: ProofConfig;
@@ -273,7 +272,7 @@ export async function callAPI(
     let result
     let config = params;
     let callingUrl = `http://localhost:${port}${url}`;
-    if (demo) {
+    if (demo && port !== apiPortUniversalResolver) {
         let prefix = "";
         if (port === apiPortCore)
             prefix = "core";

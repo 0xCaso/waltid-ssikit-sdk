@@ -289,14 +289,18 @@ describe('Custodian Class', () => {
                 }
             })
         });
-        // describe('should list all credential ids', () => {
-        //     it('should return an array of credential ids', async () => {
-        //         let retrieved = await Custodian.getCredentialIDs();
-        //         // TODO: fix
-        //         expect(retrieved).toBeInstanceOf(Array);
-        //         expect(retrieved.length).toBeGreaterThan(-1);
-        //     })
-        // });
+        describe('should list all credential ids', () => {
+            it('should return an array of credential ids', async () => {
+                let [credential,] = await issueRandomVC("LD_PROOF")
+                let lastPart = credential.id.split(':').pop();
+                let alias = `Test${lastPart}`
+                await Custodian.storeCredential(alias, credential);
+                let retrieved = await Custodian.getCredentialIDs();
+                expect(retrieved).toBeInstanceOf(Array);
+                expect(retrieved.length).toBeGreaterThan(-1);
+                await Custodian.deleteCredential(alias);
+            })
+        });
         describe('should create a Verifiable Presentation', () => {
             it('given credential(s)', async () => {
                 let key = await Custodian.generateKey("EdDSA_Ed25519");
