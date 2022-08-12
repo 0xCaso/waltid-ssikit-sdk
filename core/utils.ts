@@ -48,6 +48,24 @@ export function staticImplements<T>() {
     return <U extends T>(constructor: U) => {constructor};
 }
 
+export interface IKey {
+    keyId: {
+        id: string,
+    },
+    algorithm: string
+}
+
+export class Key {
+    public keyId: {
+        id: string,
+    };
+    public algorithm: string;
+    constructor(keyId: {id: string}, algorithm: string) {
+        this.keyId = keyId;
+        this.algorithm = algorithm;
+    }
+}
+
 export class ProofConfig {
     public issuerDid: string;
     public subjectDid: string;
@@ -80,9 +98,9 @@ export class ProofConfig {
     ) {
         this.issuerDid = issuerDid;
         this.subjectDid = subjectDid;
+        this.proofType = proofType;
         this.verifierDid = verifierDid;
         this.issuerVerificationMethod = issuerVerificationMethod;
-        this.proofType = proofType;
         this.domain = domain;
         this.nonce = nonce;
         this.proofPurpose = proofPurpose;
