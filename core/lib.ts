@@ -1,8 +1,7 @@
-import * as utils from './utils'
-
 import { Custodian } from './Custodian';
 import { Signatory } from './Signatory';
 import { ESSIF } from './ESSIF';
+import * as utils from '../core/utils';
 
 /**
  * 
@@ -20,15 +19,20 @@ export async function issueRandomVC(proofType: utils.ProofType, subjectDID?: str
     let baseToken = utils.createBaseToken();
     let revocationToken = utils.deriveRevocationToken(baseToken);
     // let templates = await Signatory.getVCTemplates();
-    let credentialStatus = new utils.CredentialStatus(
-        `http://localhost:${utils.apiPortSignatory}/v1/revocations/`+revocationToken, 
-        "SimpleCredentialStatus2022"
-    );
-    let request = new utils.IssueCredentialRequest(
-        "VerifiableId",
-        new utils.ProofConfig(issuerDID, subjectDID, proofType),
-        {credentialStatus}
-    )
+    let credentialStatus: utils.CredentialStatus = {
+        id: `http://localhost:${utils.apiPortSignatory}/v1/revocations/`+revocationToken, 
+        type: "SimpleCredentialStatus2022"
+    };
+    let config: utils.ProofConfig = {
+        issuerDid: issuerDID, 
+        subjectDid: subjectDID, 
+        proofType: proofType
+    }
+    let request: utils.IssueCredentialRequest = {
+        templateId: "VerifiableId",
+        config: config,
+        credentialData: {credentialStatus}
+    };
     let credential = await Signatory.issueCredential(request);
     console.log(JSON.stringify(credential))
     return [credential, baseToken];

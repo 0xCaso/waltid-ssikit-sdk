@@ -1,9 +1,6 @@
 import { Auditor } from '../core/Auditor';
-import { 
-    VerificationRequest, ProofType, 
-    DynamicPolicyArg,
-} from '../core/utils';
 import { issueRandomVC } from '../core/lib';
+import * as utils from '../core/utils';
 
 describe('Auditor Class', () => {
 
@@ -16,7 +13,7 @@ describe('Auditor Class', () => {
             expect(typeof policies[0].id).toBe('string');
         });
         it('should verify a W3C credential', async () => {
-            let proofType: ProofType = "LD_PROOF";
+            let proofType: utils.ProofType = "LD_PROOF";
             let [credential,] = await issueRandomVC(proofType);
             let CredentialStatusPolicy = {
                 policy: "CredentialStatusPolicy"
@@ -24,10 +21,10 @@ describe('Auditor Class', () => {
             let SignaturePolicy = {
                 policy: "SignaturePolicy"
             }
-            let request = new VerificationRequest(
-                [ CredentialStatusPolicy, SignaturePolicy ],
-                [ credential ],
-            );
+            let request: utils.VerificationRequest = {
+                policies: [ CredentialStatusPolicy, SignaturePolicy ],
+                credentials: [ credential ],
+            }
             let result = await Auditor.verifyCredential(request);
             expect(result.valid).toBe(true);
         });
@@ -36,7 +33,17 @@ describe('Auditor Class', () => {
             let update = true;
             let downloadPolicy = true;
             let input = {};
-            let arg = new DynamicPolicyArg(policyName, "OPA", true, true, input, "", "", "", "test test");
+            let arg: utils.DynamicPolicyArg = {
+                name: policyName,
+                policyEngine: "OPA",
+                applyToVC: true,
+                applyToVP: true,
+                input: input,
+                policy: "",
+                dataPath: "",
+                policyQuery: "",
+                description: "test"
+            }
             await Auditor.createDynamicVerificationPolicy(
                 policyName,
                 arg,

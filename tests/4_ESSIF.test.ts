@@ -1,9 +1,6 @@
 import { ESSIF } from '../core/ESSIF';
 import { Custodian } from '../core/Custodian';
 import fs from 'fs';
-import { 
-    EbsiTimestampRequest, getId,
-} from '../core/utils';
 
 jest.setTimeout(50000);
 
@@ -52,7 +49,7 @@ describe('ESSIF Class', () => {
     describe('Timestamps', () => {
         // it('should create a timestamp', async () => {
         //     let data = {"test":"test"};
-        //     let request = new EbsiTimestampRequest(did, data);
+        //     let request = new EbsiTimestampRequest(did, JSON.stringify(data));
         //     let result = await ESSIF.createTimestamp(request);
         //     expect(result.substring(0, 2)).toBe("0x");
         // });

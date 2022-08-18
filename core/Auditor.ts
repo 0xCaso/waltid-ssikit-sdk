@@ -1,11 +1,12 @@
 import { 
     callAPI, apiPortAuditor, VerificationRequest,
-    DynamicPolicyArg, staticImplements,
+    DynamicPolicyArg,
 } from './utils';
+import * as utils from './utils';
 
 import { IAuditor } from '../interfaces/IAuditor';
 
-@staticImplements<IAuditor>()
+@utils.staticImplements<IAuditor>()
 export class Auditor {
 
     /*//////////////////////////////////////////////////////////////

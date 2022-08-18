@@ -1,9 +1,6 @@
 import { Custodian } from '../core/Custodian';
-import { 
-    PresentCredentialsRequest, PresentCredentialIDsRequest,
-    getId,
-} from '../core/utils';
 import { issueRandomVC } from '../core/lib'
+import * as utils from '../core/utils';
 
 describe('Custodian Class', () => {
 
@@ -21,7 +18,7 @@ describe('Custodian Class', () => {
             it('should generate a key', async () => {
                 let key = await Custodian.generateKey("RSA");
                 expect(key).toBeInstanceOf(Object);
-                let keyId = getId(key, "key");
+                let keyId = utils.getId(key, "key");
                 expect(keyId).not.toBe("");
             })
         })
@@ -32,7 +29,7 @@ describe('Custodian Class', () => {
                     await Custodian.generateKey("RSA");
                 }
                 let keys = await Custodian.getKeys();
-                let keyId = getId(keys[0], "key");
+                let keyId = utils.getId(keys[0], "key");
                 expect(keys).toBeInstanceOf(Array);
                 expect(keys.length).toBe(5);
                 expect(keyId).not.toBe("");
@@ -41,9 +38,9 @@ describe('Custodian Class', () => {
         describe('getKey', () => {
             it('should return a key', async () => {
                 let key = await Custodian.generateKey("RSA");
-                let keyId = getId(key, "key");
+                let keyId = utils.getId(key, "key");
                 key = await Custodian.getKey(keyId);
-                let retrievedKeyId = getId(key, "key");
+                let retrievedKeyId = utils.getId(key, "key");
                 expect(key).toBeInstanceOf(Object);
                 expect(retrievedKeyId).not.toBe("");
             });
@@ -307,7 +304,13 @@ describe('Custodian Class', () => {
                 let subjectDID = await Custodian.createDID("key", key);
                 let [credential1,] = await issueRandomVC("LD_PROOF");
                 let [credential2,] = await issueRandomVC("LD_PROOF");
-                let request = new PresentCredentialsRequest([credential1, credential2], subjectDID)
+                let vcs = [credential1, credential2];
+                let vcsStrings = vcs.map(vc => JSON.stringify(vc))
+                let request: utils.PresentCredentialsRequest = {
+                    vcs: vcsStrings, 
+                    holderDid: subjectDID,
+                    discriminator: "presentCredentialsRequest"
+                }
                 let vp = await Custodian.presentCredentials(request);
                 expect(vp).toBeInstanceOf(Object);
                 expect(vp.verifiableCredential[0].id).toBe(credential1.id);
@@ -325,7 +328,11 @@ describe('Custodian Class', () => {
                 let lastPart2 = credential2.id.split(':').pop();
                 let alias2 = `Test${lastPart2}`
                 await Custodian.storeCredential(alias2, credential2);
-                let request = new PresentCredentialIDsRequest([alias1, alias2], subjectDID)
+                let request: utils.PresentCredentialIDsRequest = {
+                    vcIds: [alias1, alias2],
+                    holderDid: subjectDID,
+                    discriminator: "presentCredentialIDsRequest"
+                }
                 let vp = await Custodian.presentCredentials(request);
                 expect(vp).toBeInstanceOf(Object);
                 expect(vp.verifiableCredential[0].id).toBe(credential1.id);

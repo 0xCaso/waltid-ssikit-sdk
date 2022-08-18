@@ -18,6 +18,10 @@ if (!debug) {
     console.error = function() {}
 }
 
+    /*//////////////////////////////////////////////////////////////
+                              TYPES / CONST
+    //////////////////////////////////////////////////////////////*/
+
 type Call = "GET" | "POST" | "DELETE" | "PUT";
 type Port = 7000 | 7001 | 7002 | 7003 | 7004 | 8080;
 
@@ -28,229 +32,106 @@ export const apiPortAuditor: Port = 7003;
 export const apiPortESSIF: Port = 7004;
 export const apiPortUniversalResolver: Port = 8080;
 
-    /*//////////////////////////////////////////////////////////////
-                                  TYPES
-    //////////////////////////////////////////////////////////////*/
-
 export type KeyAlgorithm = "RSA" | "EdDSA_Ed25519" | "ECDSA_Secp256k1";
 export type KeyFormat = "JWK" | "PEM";
 export type DIDMethod = "key" | "web" | "ebsi";
 export type ProofType = "JWT" | "LD_PROOF"; // LD_PROOF is default
 export type CredentialStatusType = "SimpleCredentialStatus2022";
 export type PolicyEngineType = "OPA";
+export type PresentationRequest = PresentCredentialsRequest | PresentCredentialIDsRequest
 
     /*//////////////////////////////////////////////////////////////
-                                 CLASSES
+                               INTERFACES
     //////////////////////////////////////////////////////////////*/
 
-/* class decorator */
-export function staticImplements<T>() {
-    return <U extends T>(constructor: U) => {constructor};
-}
-
-export interface IKey {
+export interface Key {
     keyId: {
         id: string,
     },
     algorithm: string
 }
 
-export class Key {
-    public keyId: {
-        id: string,
-    };
-    public algorithm: string;
-    constructor(keyId: {id: string}, algorithm: string) {
-        this.keyId = keyId;
-        this.algorithm = algorithm;
-    }
-}
-
-export class ProofConfig {
-    public issuerDid: string;
-    public subjectDid: string;
-    public proofType?: ProofType;
-    public verifierDid?: string;
-    public issuerVerificationMethod?: string;
-    public domain?:	string;
-    public nonce?: string;
-    public proofPurpose?: string;
-    public credentialId?: string;
-    public issueDate?: string;
-    public validDate?: string;
-    public expirationDate?: string;
-    public dataProviderIdentifier?: string;
-
-    constructor(
-        issuerDid: string,
-        subjectDid: string,
-        proofType?: ProofType,
-        verifierDid?: string,
-        issuerVerificationMethod?: string,
-        domain?:	string,
-        nonce?: string,
-        proofPurpose?: string,
-        credentialId?: string,
-        issueDate?: string,
-        validDate?: string,
-        expirationDate?: string,
-        dataProviderIdentifier?: string,
-    ) {
-        this.issuerDid = issuerDid;
-        this.subjectDid = subjectDid;
-        this.proofType = proofType;
-        this.verifierDid = verifierDid;
-        this.issuerVerificationMethod = issuerVerificationMethod;
-        this.domain = domain;
-        this.nonce = nonce;
-        this.proofPurpose = proofPurpose;
-        this.credentialId = credentialId;
-        this.issueDate = issueDate;
-        this.validDate = validDate;
-        this.expirationDate = expirationDate;
-        this.dataProviderIdentifier = dataProviderIdentifier;
-    }
+export interface ProofConfig {
+    issuerDid: string;
+    subjectDid: string;
+    proofType?: ProofType;
+    verifierDid?: string;
+    issuerVerificationMethod?: string;
+    domain?:	string;
+    nonce?: string;
+    proofPurpose?: string;
+    credentialId?: string;
+    issueDate?: string;
+    validDate?: string;
+    expirationDate?: string;
+    dataProviderIdentifier?: string;
 }
 
 // MANDATORY:
 // - templateId
 // - issuerDID (inside config)
 // - subjectDID (inside config)
-export class IssueCredentialRequest {
-    public templateId: string;
-    public config: ProofConfig;
-    public credentialData?: object;
-
-    constructor(
-        templateId: string,
-        config: ProofConfig,
-        credentialData?: object
-    ) {
-        this.templateId = templateId;
-        this.config = config;
-        this.credentialData = credentialData;
-    }
+export interface IssueCredentialRequest {
+    templateId: string;
+    config: ProofConfig;
+    credentialData?: object;
 }
 
-export class CredentialStatus {
-    public id: string;
-    public type: CredentialStatusType;
-
-    constructor(id: string, type: CredentialStatusType) {
-        this.id = id;
-        this.type = type;
-    }
+export interface CredentialStatus {
+    id: string;
+    type: CredentialStatusType;
 }
 
-export class VerificationRequest {
-    public policies: any[];
-    public credentials: any[];
-
-    constructor(policies: any[], credentials: any[]) {
-        this.policies = policies;
-        this.credentials = credentials;
-    }
+export interface VerificationRequest {
+    policies: any[];
+    credentials: any[];
 }
 
 // https://docs.walt.id/v/ssikit/concepts/verification-policies/dynamic-policies
-export class DynamicPolicyArg {
-    public name: string;
-    public description?: string;
-    public input: any;
-    public policy: string;
-    public dataPath: string;
-    public policyQuery: string;
-    public policyEngine: PolicyEngineType;
-    public applyToVC: boolean;
-    public applyToVP: boolean;
-
-    constructor(
-        name: string, 
-        policyEngine: PolicyEngineType,
-        applyToVC: boolean,
-        applyToVP: boolean,
-        input: any,
-        policy: string,
-        dataPath: string,
-        policyQuery: string,
-        description?: string,
-    ) {
-        this.name = name;
-        this.description = description;
-        this.input = input;
-        this.policy = policy;
-        this.dataPath = dataPath;
-        this.policyQuery = policyQuery;
-        this.policyEngine = policyEngine;
-        this.applyToVC = applyToVC;
-        this.applyToVP = applyToVP;
-    }
+export interface DynamicPolicyArg {
+    name: string;
+    policyEngine: PolicyEngineType;
+    applyToVC: boolean;
+    applyToVP: boolean;
+    input: any;
+    policy: string;
+    dataPath: string;
+    policyQuery: string;
+    description?: string;
 }
 
-export class PresentCredentialsRequest {
-    public vcs: string[];
-    public holderDid: string;
-    public verifierDid?: string;
-    public domain?: string;
-    public challenge?: string;
-
-    constructor(
-        vcs: object[],
-        holderDid: string,
-        verifierDid?: string,
-        domain?: string,
-        challenge?: string,
-    ) {
-        // we pass the array of VC objects, then we transform to string for the APIs
-        this.vcs = vcs.map(vc => JSON.stringify(vc));
-        this.holderDid = holderDid;
-        this.verifierDid = verifierDid;
-        this.domain = domain;
-        this.challenge = challenge;
-    }
+export interface PresentCredentialsRequest {
+    discriminator: "presentCredentialsRequest";
+    vcs: string[];
+    holderDid: string;
+    verifierDid?: string;
+    domain?: string;
+    challenge?: string;
 }
 
-export class PresentCredentialIDsRequest {
-    public vcIds: string[];
-    public holderDid: string;
-    public verifierDid?: string;
-    public domain?: string;
-    public challenge?: string;
-
-    constructor(
-        vcIds: string[],
-        holderDid: string,
-        verifierDid?: string,
-        domain?: string,
-        challenge?: string,
-    ) {
-        this.vcIds = vcIds;
-        this.holderDid = holderDid;
-        this.verifierDid = verifierDid;
-        this.domain = domain;
-        this.challenge = challenge;
-    }
+export interface PresentCredentialIDsRequest {
+    discriminator: "presentCredentialIDsRequest";
+    vcIds: string[];
+    holderDid: string;
+    verifierDid?: string;
+    domain?: string;
+    challenge?: string;
 }
 
-export class EbsiTimestampRequest {
-    public did: string;
-    public ethDidAlias?: string;
-    public data: string;
-
-    constructor(
-        did: string,
-        data: object,
-        ethDidAlias?: string,
-    ) {
-        this.did = did;
-        this.ethDidAlias = ethDidAlias;
-        this.data = JSON.stringify(data);
-    }
+export interface EbsiTimestampRequest {
+    did: string;
+    ethDidAlias?: string;
+    data: string;
 }
 
     /*//////////////////////////////////////////////////////////////
                                 FUNCTIONS
     //////////////////////////////////////////////////////////////*/
+
+/* class decorator */
+export function staticImplements<T>() {
+    return <U extends T>(constructor: U) => {constructor};
+}
 
 export async function callAPI(
     type: Call,
@@ -278,18 +159,11 @@ export async function callAPI(
         callingUrl = `https://${prefix}.ssikit.walt-test.cloud${url}`;
     }
     try {
-        if (type === "GET") {
-            result = await axios.get(callingUrl, config);
-        } else 
-        if (type === "POST") {
-            result = await axios.post(callingUrl, config);
-        } else 
-        if (type === "DELETE") {
-            result = await axios.delete(callingUrl, config);
-        } else
-        if (type === "PUT") {
-            result = await axios.put(callingUrl, config);
-        }
+        let result = await axios({
+            method: type,
+            url: callingUrl,
+            data: config
+        });
         return result
     } catch(err: any) {
         console.error(err.response.data);

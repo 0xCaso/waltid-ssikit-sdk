@@ -1,7 +1,7 @@
 import { 
     callAPI, apiPortCustodian, 
     KeyAlgorithm, KeyFormat, DIDMethod,
-    PresentCredentialsRequest, PresentCredentialIDsRequest,
+    PresentationRequest,
     staticImplements, getId,
 } from './utils';
 
@@ -25,6 +25,13 @@ export class Custodian {
         let dids = await this.getDIDs();
         for (let did of dids) {
             await this.deleteDID(did);
+        }
+    }
+    
+    static async deleteAllCredentials() {
+        let vcs = await this.getCredentialIDs();
+        for (let vc of vcs) {
+            await this.deleteCredential(vc);
         }
     }
 
@@ -327,21 +334,23 @@ export class Custodian {
      * @returns a Verifiable Presentation object
      */
     static async presentCredentials(
-        request: PresentCredentialsRequest | PresentCredentialIDsRequest
+        request: PresentationRequest
     ):
         Promise<any>
     {
         let url = ""
-        if (request instanceof PresentCredentialsRequest) {
+        if (request.discriminator === "presentCredentialsRequest") {
             url = "/credentials/present";
         } else {
             url = "/credentials/presentIds";
         }
+        let requestWithoutDiscriminator = JSON.parse(JSON.stringify(request));
+        delete requestWithoutDiscriminator.discriminator;
         let result = await callAPI(
             "POST",
             apiPortCustodian,
             url,
-            request
+            requestWithoutDiscriminator
         );
         return result?.data;
     }
