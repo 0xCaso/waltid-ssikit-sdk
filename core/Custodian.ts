@@ -3,6 +3,7 @@ import {
     KeyAlgorithm, KeyFormat, DIDMethod,
     PresentationRequest,
     staticImplements, getId,
+    Key,
 } from './utils';
 
 import { ICustodian } from '../interfaces/ICustodian';
@@ -43,7 +44,7 @@ export class Custodian {
      * 
      * @returns Array of Key objects
      */
-    static async getKeys(): Promise<Array<any>> {
+    static async getKeys(): Promise<Array<Key>> {
         let result = await callAPI(
             "GET",
             apiPortCustodian,
@@ -57,7 +58,7 @@ export class Custodian {
      * @param keyId string
      * @returns Key object
      */
-    static async getKey(keyId: string): Promise<any> {
+    static async getKey(keyId: string): Promise<Key> {
         let result = await callAPI(
             "GET",
             apiPortCustodian,
@@ -71,7 +72,7 @@ export class Custodian {
      * @param keyAlgorithm Algorithm used for the key generation. Admitted values: RSA, EdDSA_Ed25519, ECDSA_Secp256k1
      * @returns Generated key object
      */
-    static async generateKey(keyAlgorithm: KeyAlgorithm): Promise<any> {
+    static async generateKey(keyAlgorithm: KeyAlgorithm): Promise<Key> {
         var result = await callAPI(
             "POST",
             apiPortCustodian, 
@@ -115,7 +116,7 @@ export class Custodian {
     {
         let keyId = getId(key, "key");
         if (keyId) {
-            let key = await this.getKey(keyId);
+            let key: Key = await this.getKey(keyId);
             if (key) {
                 let result = await callAPI(
                     "POST",
@@ -137,7 +138,7 @@ export class Custodian {
      * @param formattedKey is a JWK or PEM object
      * @returns the keyId of the imported key
      */
-    static async importKey(formattedKey: object): Promise<any> {
+    static async importKey(formattedKey: object): Promise<string> {
         let result = await callAPI(
             "POST",
             apiPortCustodian,

@@ -1,11 +1,12 @@
 import { ESSIF } from '../core/ESSIF';
 import { Custodian } from '../core/Custodian';
+import * as utils from '../core/utils';
 import fs from 'fs';
 
 jest.setTimeout(50000);
 
 describe('ESSIF Class', () => {
-    let key: any, did: string
+    let key: utils.Key, did: string
 
     // Go to https://app.preprod.ebsi.eu/users-onboarding, select 'Onboard with Captcha' > 'Desktop Wallet',
     // click to download and save it into "tests" folder

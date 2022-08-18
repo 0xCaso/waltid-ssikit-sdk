@@ -45,10 +45,13 @@ export type PresentationRequest = PresentCredentialsRequest | PresentCredentialI
     //////////////////////////////////////////////////////////////*/
 
 export interface Key {
+    algorithm: string,
+    cryptoProvider: string,
     keyId: {
         id: string,
     },
-    algorithm: string
+    keyPair: object,
+    keysetHandle: string
 }
 
 export interface ProofConfig {

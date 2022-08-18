@@ -10,10 +10,10 @@ import * as utils from '../core/utils';
  * @returns a VC and the private revocation token for the issuer
  */
 export async function issueRandomVC(proofType: utils.ProofType, subjectDID?: string) : Promise<any> {
-    let issuerKey = await Custodian.generateKey("EdDSA_Ed25519");
+    let issuerKey: utils.Key = await Custodian.generateKey("EdDSA_Ed25519");
     let issuerDID = await Custodian.createDID("key", issuerKey);
     if (!subjectDID) {
-        let subjectKey = await Custodian.generateKey("EdDSA_Ed25519");
+        let subjectKey: utils.Key = await Custodian.generateKey("EdDSA_Ed25519");
         subjectDID = await Custodian.createDID("key", subjectKey);
     }
     let baseToken = utils.createBaseToken();
