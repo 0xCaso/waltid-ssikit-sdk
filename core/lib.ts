@@ -44,7 +44,10 @@ export async function issueRandomVC(proofType: utils.ProofType, subjectDID?: str
  * @param did the DID to register
  * @returns DID registration result
  */
-export async function registerDIDOnEBSI(bearerToken: string, did: string) {
+export async function registerDIDOnEBSI(bearerToken: string, did: string): Promise<string> {
+    const timeout = async (ms: number) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
     let onboard = await ESSIF.onboard(bearerToken, did);
     if (onboard) {
         let auth = await ESSIF.auth(did);
@@ -52,10 +55,12 @@ export async function registerDIDOnEBSI(bearerToken: string, did: string) {
             let register = await ESSIF.registerDID(did);
             if (register) {
                 console.log("DID registered successfully");
-                let resolved = Custodian.resolveDID(did)
-                console.log(JSON.stringify(resolved))
+                await timeout(7000);
+                let resolved = await Custodian.resolveDID(did)
+                return JSON.stringify(resolved, null, 2);
             }
         }
     }
     console.log("DID registration failed");
+    return "";
 }
