@@ -10,7 +10,7 @@ import {
  * For did:sov and did:btcr methods you'll need to define
  * into uni-resolver's docker-compose.yml the environment variables
  */
-export class UniversalResolver {
+export default class UniversalResolver {
 
     /**
      * 

@@ -1,4 +1,4 @@
-import { Custodian } from '../core/Custodian';
+import Custodian from '../core/Custodian';
 import { issueRandomVC } from '../core/lib'
 import * as utils from '../core/utils';
 

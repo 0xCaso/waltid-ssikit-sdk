@@ -7,7 +7,7 @@ import * as utils from './utils';
 import { IAuditor } from '../interfaces/IAuditor';
 
 @utils.staticImplements<IAuditor>()
-export class Auditor {
+export default class Auditor {
 
     /*//////////////////////////////////////////////////////////////
                           VERIFICATION POLICIES

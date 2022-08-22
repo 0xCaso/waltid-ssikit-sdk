@@ -9,7 +9,7 @@ import {
 import { ICustodian } from '../interfaces/ICustodian';
 
 @staticImplements<ICustodian>()
-export class Custodian {
+export default class Custodian {
 
     /*//////////////////////////////////////////////////////////////
                                  HELPERS

@@ -1,5 +1,5 @@
-import { ESSIF } from '../core/ESSIF';
-import { Custodian } from '../core/Custodian';
+import ESSIF from '../core/ESSIF';
+import Custodian from '../core/Custodian';
 import * as utils from '../core/utils';
 import fs from 'fs';
 

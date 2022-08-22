@@ -1,5 +1,5 @@
-import { Signatory } from '../core/Signatory';
-import { Custodian } from '../core/Custodian';
+import Signatory from '../core/Signatory';
+import Custodian from '../core/Custodian';
 import { issueRandomVC } from '../core/lib';
 import * as utils from '../core/utils';
 

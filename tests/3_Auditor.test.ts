@@ -1,4 +1,4 @@
-import { Auditor } from '../core/Auditor';
+import Auditor from '../core/Auditor';
 import { issueRandomVC } from '../core/lib';
 import * as utils from '../core/utils';
 

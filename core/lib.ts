@@ -1,6 +1,6 @@
-import { Custodian } from './Custodian';
-import { Signatory } from './Signatory';
-import { ESSIF } from './ESSIF';
+import Custodian from './Custodian';
+import Signatory from './Signatory';
+import ESSIF from './ESSIF';
 import * as utils from '../core/utils';
 
 /**
@@ -55,7 +55,7 @@ export async function registerDIDOnEBSI(bearerToken: string, did: string): Promi
             let register = await ESSIF.registerDID(did);
             if (register) {
                 console.log("DID registered successfully");
-                await timeout(7000);
+                await timeout(10000);
                 let resolved = await Custodian.resolveDID(did)
                 return JSON.stringify(resolved, null, 2);
             }

@@ -7,7 +7,7 @@ import {
 import { ISignatory } from '../interfaces/ISignatory';
 
 @staticImplements<ISignatory>()
-export class Signatory {
+export default class Signatory {
 
     /*//////////////////////////////////////////////////////////////
                                CREDENTIALS

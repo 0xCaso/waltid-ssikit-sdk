@@ -9,7 +9,7 @@ import { IESSIF } from '../interfaces/IESSIF';
 // https://docs.walt.id/v/ssikit/usage-examples/usage-examples/onboarding-and-dids
 
 @staticImplements<IESSIF>()
-export class ESSIF {
+export default class ESSIF {
     
     /*//////////////////////////////////////////////////////////////
                               ESSIF CLIENT
