@@ -127,6 +127,19 @@ export interface EbsiTimestampRequest {
     data: string;
 }
 
+export interface RevocationStatus {
+    isRevoked: boolean;
+    token: string;
+    timeOfRevocation?: number;
+}
+
+export interface VerificationPolicy {
+    id: string;
+    description: string;
+    argumentType: string;
+    isMutable: boolean;
+}
+
     /*//////////////////////////////////////////////////////////////
                                 FUNCTIONS
     //////////////////////////////////////////////////////////////*/

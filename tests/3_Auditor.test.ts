@@ -15,6 +15,7 @@ describe('Auditor Class', () => {
         it('should verify a W3C credential', async () => {
             let proofType: utils.ProofType = "LD_PROOF";
             let [credential,] = await issueRandomVC(proofType);
+            let [credential2,] = await issueRandomVC(proofType);
             let CredentialStatusPolicy = {
                 policy: "CredentialStatusPolicy"
             }
@@ -23,7 +24,7 @@ describe('Auditor Class', () => {
             }
             let request: utils.VerificationRequest = {
                 policies: [ CredentialStatusPolicy, SignaturePolicy ],
-                credentials: [ credential ],
+                credentials: [ credential, credential2 ],
             }
             let result = await Auditor.verifyCredential(request);
             expect(result.valid).toBe(true);

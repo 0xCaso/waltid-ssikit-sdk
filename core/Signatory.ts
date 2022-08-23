@@ -2,6 +2,7 @@ import {
     callAPI, apiPortSignatory,
     IssueCredentialRequest,
     staticImplements,
+    RevocationStatus,
 } from './utils';
 
 import { ISignatory } from '../interfaces/ISignatory';
@@ -72,9 +73,9 @@ export default class Signatory {
     /**
      * 
      * @param publicRevocationToken VC's public revocation token, used to check the status of the revocation
-     * @returns revocation result: object = { token: string, revoked: boolean, timeOfRevocation: integer }
+     * @returns revocation status
      */
-    static async isRevoked(publicRevocationToken: string): Promise<any> {
+    static async isRevoked(publicRevocationToken: string): Promise<RevocationStatus> {
         let result = await callAPI(
             "GET", 
             apiPortSignatory,
@@ -94,6 +95,6 @@ export default class Signatory {
             apiPortSignatory,
             `/v1/revocations/${privateRevocationToken}`
         );
-        return result.status === 200 ? true : false;
+        return result.status === 201 ? true : false;
     }
 }

@@ -17,7 +17,7 @@ export default class Auditor {
      * 
      * @returns an array of VerificationPolicy JSON objects { applyToVC, applyToVP, id, description }
      */
-    static async getVerificationPolicies(): Promise<Array<any>> {
+    static async getVerificationPolicies(): Promise<Array<utils.VerificationPolicy>> {
         let result = await callAPI(
             "GET", 
             apiPortAuditor,
